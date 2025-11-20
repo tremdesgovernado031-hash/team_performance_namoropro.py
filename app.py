@@ -1,7 +1,5 @@
 import streamlit as st
-from datetime import datetime, timedelta
-import time
-from PIL import Image # Usar a biblioteca PIL para tentar carregar a imagem com segurança
+from datetime import datetime
 
 # --- Configurações Iniciais ---
 st.set_page_config(
@@ -11,84 +9,43 @@ st.set_page_config(
 )
 
 # --- Configuração de Data e Hora ---
-# A data de início do relacionamento
 START_DATETIME = datetime(2024, 5, 19, 21, 30)
+NOW = datetime.now()
 
 # --- Funções de Cálculo ---
 def calculate_time_together(start_dt, end_dt):
     """Calcula o tempo decorrido em anos, meses, dias, horas, minutos, segundos e total de segundos."""
     delta = end_dt - start_dt
     
-    # Se a data de término for anterior à data de início (caso improvável, mas para segurança)
-    if delta.total_seconds() < 0:
-        return 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-
     total_seconds = int(delta.total_seconds())
+    total_minutes = int(total_seconds / 60)
+    total_hours = int(total_seconds / 3600)
     total_days = delta.days
     
-    # 1. Cálculo de Anos, Meses, Dias (Aproximado para exibição)
     years = total_days // 365
     remaining_days = total_days % 365
-    # Simplificação: 30 dias por mês. Para cálculo mais exato, seria necessário usar lógica de meses/anos bissextos, mas para exibição é comum usar esta aproximação.
     months = remaining_days // 30
-    days = remaining_days % 30 
-
-    # 2. Cálculo de Horas, Minutos, Segundos (Exato no dia atual)
-    # Recalcula a diferença exata de tempo (horas, minutos, segundos) após os dias completos
-    remaining_seconds_in_day = total_seconds % 86400 
+    days = remaining_days % 30
     
-    hours = remaining_seconds_in_day // 3600
-    minutes = (remaining_seconds_in_day % 3600) // 60
-    seconds = remaining_seconds_in_day % 60
-    
-    total_hours = total_seconds // 3600
-    total_minutes = total_seconds // 60
+    remaining_seconds = total_seconds - (total_days * 86400)
+    hours = int(remaining_seconds // 3600)
+    minutes = int((remaining_seconds % 3600) // 60)
+    seconds = int(remaining_seconds % 60) # Segundos
     
     # Retorna todos os valores necessários
     return total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes, seconds
 
-def safe_load_image(image_path):
-    """Tenta carregar a imagem e retorna o objeto da imagem ou None em caso de erro."""
-    try:
-        # Tenta abrir e carregar a imagem
-        img = Image.open(image_path)
-        return img
-    except Exception as e:
-        # Se houver um erro (arquivo não encontrado, corrompido, etc.), retorna None
-        return None
+# Atualiza a atribuição para incluir 'seconds'
+total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes, seconds = calculate_time_together(START_DATETIME, NOW)
 
 # --- Lista de Imagens ---
-# TOTAL: 29 caminhos de arquivo ÚNICOS (Incluindo o arquivo corrompido que foi recolocado)
+# IMPORTANTE: A lista foi limpa. Por favor, substitua a imagem de placeholder abaixo 
+# por todos os novos caminhos das suas fotos.
 caminhos_imagens = [
-    "eb8ec612-f16e-4814-85f3-a6a62b78d6a1.jpg",
-    "21d25895-1288-4db2-857d-ed1400973387.jpg",
-    "91db3b05-5341-4b97-999d-f685110dc150.jpg",
-    "477a557e-3faa-4deb-936f-03483b8a654d.jpg",
-    "254edec2-50eb-4e6b-ac36-bce2b88dfaa4.jpg",
-    "578ab3ea-698d-4404-9ab1-93cb9180805e.jpg",
-    "c9653015-c93d-4225-a3b0-db230961ae4c.jpg",
-    "6df69606-e508-4a81-9b3d-abc491b099a0.jpg",
-    "b8511401-d3a4-4633-a374-ec9553f291fe.jpg",
-    "17062653-6824-44e6-968d-65ef02f4f310.jpg",
-    "ea6ff7bf-8106-4d43-a975-3065bbc3e87d.jpg",
-    "3be387d0-0561-413f-8126-3c8119782ed1.jpg",
-    "7a28892e-cb49-453a-9857-c3547231de6b.jpg", # <-- REINSERIDO
-    "b067b0c5-06df-4cb8-bbd3-9e2752e9a809.jpg",
-    "0d427601-384a-449d-b935-069468ef3917.jpg",
-    "1ebbab1f-7cd0-4128-a55c-a8e05bffbe6e.jpg",
-    "b786514b-5813-430b-a0b2-5322fddb52da.jpg",
-    "ae03878a-f795-4a8a-9277-7c52fed6623b.jpg",
-    "060d5638-8666-45c3-9fc8-c23b642fbed5.jpg",
-    "d2284db7-4052-4275-be26-b268fbe9907d.jpg",
-    "a7e2ea93-2876-40e2-98a2-c581bbc93779.jpg",
-    "9e264297-7acd-40ac-a8ae-8a2f0cbd339e.jpg",
-    "78b878b6-14a9-4df2-8060-499c939358bf.jpg",
-    "WhatsApp Image 2025-11-19 at 20.43.14.jpeg",
-    "46473c97-9f73-4f0d-9ef3-0132ea25008e.jpg",
-    "fb514067-0fec-4f7f-9a5b-15541c05f28d.jpg",
-    "31b3bf5f-d68a-45fb-9722-2d5e2a3286c7.jpg",
-    "14952851-5411-48a2-9529-89caac8ad179.jpg",
-    "fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg", 
+    # Substitua esta linha por todos os caminhos das suas novas fotos.
+    # Exemplo: "imagens/sua-nova-foto-1.jpg",
+    # Exemplo: "imagens/sua-nova-foto-2.png",
+    "https://placehold.co/800x600/7F1D1D/FFFFFF?text=ADICIONE+AS+SUAS+FOTOS", 
 ]
 
 # --- Inicialização de Estado para o Carrossel ---
@@ -96,27 +53,20 @@ if 'current_index' not in st.session_state:
     st.session_state.current_index = 0
     
 def next_image():
-    if len(caminhos_imagens) > 0:
-        # A navegação do carrossel força uma reexecução do script
-        st.session_state.current_index = (st.session_state.current_index + 1) % len(caminhos_imagens)
+    st.session_state.current_index = (st.session_state.current_index + 1) % len(caminhos_imagens)
 
 def prev_image():
-    if len(caminhos_imagens) > 0:
-        # A navegação do carrossel força uma reexecução do script
-        st.session_state.current_index = (st.session_state.current_index - 1 + len(caminhos_imagens)) % len(caminhos_imagens)
+    st.session_state.current_index = (st.session_state.current_index - 1 + len(caminhos_imagens)) % len(caminhos_imagens)
 
 if len(caminhos_imagens) == 0:
+    # Se a lista estiver vazia (após o usuário limpar o placeholder), 
+    # Streamlit dará um erro, então mantemos a verificação ou um placeholder.
     st.error("Nenhuma imagem encontrada. Por favor, adicione caminhos de fotos na lista 'caminhos_imagens'.")
     st.stop()
     
-# Obter o caminho da imagem atual
 current_image_path = caminhos_imagens[st.session_state.current_index]
 
-# Tenta carregar a imagem de forma segura. Isso é chamado em CADA reexecução do Streamlit
-current_image = safe_load_image(current_image_path)
-
-
-# >>> CSS PERSONALIZADO (TEMA PRETO E VERMELHO - FOCO NO HUD) <<<
+# >>> CSS PERSONALIZADO (TEMA PRETO E VERMELHO - Foco no HUD) <<<
 st.markdown("""
     <style>
     /* Estilo do corpo e fundo */
@@ -126,7 +76,7 @@ st.markdown("""
         color: #F8F8F8; /* Cor do texto padrão (branco suave) */
     }
     /* Estilo do título principal */
-    h1 { 
+    h1.st-emotion-cache-10qzyku { 
         font-family: 'Inter', sans-serif;
         font-size: 5rem; /* Título GIGANTE */
         font-weight: 900;
@@ -156,8 +106,7 @@ st.markdown("""
         padding-bottom: 0.5rem;
     }
     /* Estilo dos contadores (st.metric) - o novo HUD */
-    /* ATENÇÃO: Os seletores 'st-emotion-cache-...' podem variar. Se houver problemas, estes são os pontos a revisar. */
-    .st-emotion-cache-1nj6q9b { /* Seletor do container do st.metric */
+    .st-emotion-cache-1nj6q9b { 
         background-color: #1e1e1e; /* Cinza bem escuro para o bloco */
         border-radius: 1.5rem;
         padding: 1.5rem;
@@ -171,16 +120,14 @@ st.markdown("""
         transform: scale(1.05); /* Pequeno zoom ao passar o mouse */
         box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
     }
-    /* Label do st.metric (Anos, Meses, Dias...) */
-    .st-emotion-cache-q18a8y, .st-emotion-cache-183zdvs { 
+    .st-emotion-cache-q18a8y { /* Label do st.metric (Anos, Meses, Dias...) */
         font-size: 1rem;
         font-weight: 700;
         color: #FFCDD2; /* Vermelho clarinho */
         text-transform: uppercase;
         letter-spacing: 1px;
     }
-    /* Value do st.metric (O número grande) */
-    .st-emotion-cache-110u8u9, .st-emotion-cache-1r3p5f5 { 
+    .st-emotion-cache-110u8u9 { /* Value do st.metric (O número grande) */
         font-size: 4.5rem; /* O MAIOR TAMANHO */
         font-weight: 900;
         color: #FF4500; /* Laranja avermelhado vibrante */
@@ -189,6 +136,7 @@ st.markdown("""
     }
     /* Estilo para a métrica Total de Dias (destaque) */
     .metric-total .st-emotion-cache-1nj6q9b {
+        /* Garante que o bloco central (Total de Dias) seja grande e não apenas o texto */
         padding: 2.5rem; 
         background-color: #2c0808; /* Um pouco mais escuro para o bloco central */
         border: 3px solid #FF0000; /* Borda Vermelha Pura */
@@ -197,37 +145,12 @@ st.markdown("""
         font-size: 4.5rem; /* Mantém o tamanho grande */
         color: #FF0000; /* Vermelho puro no valor */
     }
-    
-    /* NOVO ESTILO: Resumo Total - Destaque do tempo em ANOS, MESES e DIAS */
-    .total-summary {
-        text-align: center;
-        margin-top: 3rem;
-        margin-bottom: 3rem;
-        padding: 2rem;
-        border: 1px solid #7F1D1D;
-        border-radius: 1.5rem;
-        background-color: #1a0505; /* Fundo escuro sutil */
-        box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-        font-size: 1.5rem; /* Tamanho do texto para o resumo */
-        color: #F8F8F8;
-        font-weight: 500;
-    }
-    .total-summary strong {
-        font-size: 2.2rem; 
-        font-weight: 800;
-        color: #FF0000; /* Vermelho puro para o valor */
-        text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-        line-height: 1.2;
-    }
-
     /* Estilo do rodapé */
-    .footer-text { 
+    .st-emotion-cache-h4xj1k { 
         color: #A3A3A3;
         text-align: center;
         width: 100%;
         margin-top: 2rem;
-        padding: 1rem;
-        border-top: 1px solid rgba(255, 0, 0, 0.1);
     }
     /* Estilo da imagem no carrossel */
     .stImage > img {
@@ -240,7 +163,7 @@ st.markdown("""
         border: 2px solid #ef4444; /* Borda vermelha na foto */
     }
     /* Botões do carrossel */
-    .stButton > button {
+    .st-emotion-cache-z5rdx0 { /* Botões */
         background-color: #ef4444;
         color: white;
         border-radius: 0.75rem; /* Mais arredondado */
@@ -250,7 +173,7 @@ st.markdown("""
         border: none; /* Remove borda padrão */
         margin-top: 1rem;
     }
-    .stButton > button:hover {
+    .st-emotion-cache-z5rdx0:hover {
         background-color: #dc2626;
         transform: translateY(-2px); /* Efeito de "pular" */
         color: white;
@@ -258,108 +181,70 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- Layout da Interface (Fluxo Principal) ---
+# --- Layout da Interface ---
 
-# Recalcula o tempo para toda a exibição estática/semi-estática
-NOW = datetime.now()
-(
-    total_days, 
-    total_hours_full, 
-    total_minutes_full, 
-    total_seconds_live, 
-    years, 
-    months, 
-    days, 
-    hours_live, 
-    minutes_live, 
-    seconds_live
-) = calculate_time_together(START_DATETIME, NOW)
+st.title("💖 Pedro e Hellen 💖")
+st.markdown(f'<p class="start-date-text">Nossa jornada começou em **{START_DATETIME.strftime("%d/%m/%Y às %H:%M")}**</p>', unsafe_allow_html=True)
 
-st.title("Pedro & Hellen")
-st.markdown(
-    f'<p class="start-date-text">Juntos desde: {START_DATETIME.strftime("%d de %B de %Y, %H:%M:%S")}</p>', 
-    unsafe_allow_html=True
-)
 
-# 1. Contadores Primários (Anos, Meses, Dias)
-st.header("Tempo de Namoro")
+# 1. VISÃO GERAL (TODAS AS MÉTRICAS DE TEMPO RELATIVAS - SEM "RESTANTES")
+st.header("Tempo Juntos (Visão Geral)")
 
+# Linha 1: Anos, Meses, Dias
 col_y, col_m, col_d = st.columns(3)
-with col_y:
-    st.metric(label="Anos", value=years)
-with col_m:
-    st.metric(label="Meses", value=months)
-with col_d:
-    st.metric(label="Dias (Aprox.)", value=days)
+with col_y: st.metric(label="Anos", value=years)
+with col_m: st.metric(label="Meses", value=months)
+with col_d: st.metric(label="Dias", value=days) 
 
-# NOVO: Resumo Detalhado (Total de Anos/Meses/Dias)
-# Nota: Removido o <h2> duplicado para melhor layout.
-summary_text = f"""
-    <div class="total-summary">
-        <p>O nosso tempo juntos é de:</p>
-        <p>
-            <strong>{years}</strong> ANOS, 
-            <strong>{months}</strong> MESES e 
-            <strong>{days}</strong> DIAS (Aproximadamente)
-        </p>
-    </div>
-"""
-st.markdown(summary_text, unsafe_allow_html=True)
+# Linha 2: Horas, Minutos, Segundos
+col_h, col_min, col_s = st.columns(3)
 
+with col_h: 
+    st.metric(label="Horas", value=hours) 
 
-# 2. Total de Dias (Destaque Central)
-st.markdown('<div class="metric-total">', unsafe_allow_html=True)
-st.metric(label="Total de Dias", value=f"{total_days:,}".replace(",", "."))
-st.markdown('</div>', unsafe_allow_html=True)
-
-
-# 3. Contadores Secundários (Horas, Minutos, Segundos - AGORA ESTÁTICO)
-st.header("Detalhes do Momento Atual (Atualiza ao interagir)")
-
-# Exibe as métricas de tempo exato (horas, minutos, segundos)
-col_h, col_min, col_sec = st.columns(3)
-
-with col_h:
-    # Mostra as horas que se passaram DENTRO do dia atual (0-23)
-    st.metric(label="Horas", value=hours_live) 
 with col_min:
-    # Mostra os minutos que se passaram DENTRO da hora atual (0-59)
-    st.metric(label="Minutos", value=minutes_live)
-with col_sec:
-    # Mostra os segundos que se passaram DENTRO do minuto atual (0-59)
-    st.metric(label="Segundos", value=seconds_live)
+    st.metric(label="Minutos", value=minutes)
 
-# 4. Total Geral 
-st.markdown('<br>', unsafe_allow_html=True) # Espaçamento
-# Formata com ponto como separador de milhares para melhor leitura (1.234.567)
-st.metric(label="Total de Segundos Vivos", value=f"{total_seconds_live:,}".replace(",", "."))
+with col_s:
+    st.metric(label="Segundos", value=seconds)
 
+# BLOCO PARA O TOTAL DE DIAS - DESTAQUE
+col_spacer1, col_total, col_spacer2 = st.columns([1, 2, 1])
 
-# 5. Carrossel de Fotos
-st.header("Nossas Memórias")
+with col_total:
+    # Métrica do total de dias com estilo de destaque
+    st.markdown('<div class="metric-total">', unsafe_allow_html=True)
+    st.metric(label="Total de Dias (inteiros)", value=f"{total_days:,}".replace(",", "."))
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Cria colunas para centralizar a imagem e os botões
-col_space_l, col_img_center, col_space_r = st.columns([1, 4, 1])
+# Adicionando um divisor
+st.markdown("""
+    <div style="height: 30px;"></div>
+    <div style="width: 50%; margin: 0 auto; border-bottom: 2px dashed #7F1D1D;"></div>
+    <div style="height: 30px;"></div>
+""", unsafe_allow_html=True)
 
-with col_img_center:
-    # ** Aplica a verificação de imagem carregada **
-    if current_image:
-        # A legenda agora reflete a nova contagem total de 29
-        st.image(current_image, caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}")
-    else:
-        # Exibe uma mensagem de erro na área da imagem se ela não puder ser carregada
-        st.error(f"Não foi possível exibir a foto: {current_image_path}. O arquivo pode estar faltando ou corrompido.")
-    
-# Cria colunas para os botões Anterior/Próximo
-col_btn1, col_btn_space, col_btn2 = st.columns([1, 3, 1])
+# 2. Carrossel de Fotos
+st.subheader("Nossas Memórias Especiais")
 
-with col_btn1:
-    # Os botões agora funcionam porque o script não está mais bloqueado pelo loop 'while True'
-    st.button("❮ Anterior", on_click=prev_image, use_container_width=True)
+# Colunas para os botões (mantendo a proporção original)
+col_prev, col_center_buttons, col_next = st.columns([1, 4, 1])
+with col_prev: st.button("⬅️ Anterior", on_click=prev_image, use_container_width=True)
+with col_next: st.button("Próxima ➡️", on_click=next_image, use_container_width=True)
 
-with col_btn2:
-    # Os botões agora funcionam porque o script não está mais bloqueado pelo loop 'while True'
-    st.button("Próximo ❯", on_click=next_image, use_container_width=True)
+# Nova estrutura para centralizar e reduzir a imagem (aproximadamente 50% da largura da tela)
+# A imagem será colocada na coluna do meio, que é 3/6 (50%) da largura.
+col_spacer_l, col_image_narrow, col_spacer_r = st.columns([1.5, 3, 1.5]) 
 
-# 6. Rodapé
-st.markdown('<p class="footer-text">Feito com muito amor</p>', unsafe_allow_html=True)
+with col_image_narrow:
+    st.image(
+        current_image_path, 
+        caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}", 
+        use_column_width=True # A imagem preenche 100% da sua coluna (que é 50% da tela)
+    )
+
+# 3. Rodapé
+st.markdown(f"---")
+st.caption(f"Data e Hora de Início: **{START_DATETIME.strftime('%d/%m/%Y às %H:%M')}**")
+st.caption(f"Total de fotos únicas no carrossel: **{len(caminhos_imagens)}**")
+st.caption("Desenvolvido com carinho para o casal.")
