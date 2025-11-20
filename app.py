@@ -226,8 +226,6 @@ with col_h:
     st.metric(label="Horas", value=hours)
 
 with col_total:
-    # REMOVIDO: st.subheader("O Amor se Multiplica em...")
-    
     # Métrica do total de dias com estilo de destaque
     st.markdown('<div class="metric-total">', unsafe_allow_html=True)
     st.metric(label="Total de Dias (inteiros)", value=f"{total_days:,}".replace(",", "."))
