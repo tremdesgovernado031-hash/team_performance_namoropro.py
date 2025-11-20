@@ -14,10 +14,12 @@ DATE_OF_START = datetime(2024, 5, 19, 21, 30, 0)
 IMAGE_FOLDER = "imagens"
 image_paths = []
 
+# O Streamlit Cloud executa este código. Ele PRECISA encontrar a pasta 'imagens' no repositório.
 if os.path.exists(IMAGE_FOLDER) and os.path.isdir(IMAGE_FOLDER):
     # Lista os arquivos, ordenados por nome para ter uma ordem consistente
     for filename in sorted(os.listdir(IMAGE_FOLDER)):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+            # Adiciona o caminho completo da imagem (ex: imagens/foto1.jpg)
             image_paths.append(os.path.join(IMAGE_FOLDER, filename))
 else:
     # Aviso caso a pasta não seja encontrada
@@ -65,7 +67,7 @@ st.set_page_config(
 )
 
 st.title("❤️ Pedro e Hellen ❤️")
-st.subheader("O Nosso Amor em Números e fotos!")
+st.subheader("O Nosso Amor em Números!")
 
 # NOVIDADE: Descrição sobre os números e fotos
 st.markdown(
@@ -106,148 +108,4 @@ st.markdown(
     }
     
     /* Contêiner de Métricas (Responsável por colocar os boxes lado a lado) */
-    .metric-container {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap; /* Permite que os boxes quebrem para a próxima linha em telas pequenas */
-        margin-top: 30px;
-        gap: 20px;
-    }
-    
-    /* Caixa de Cada Métrica */
-    .metric-box {
-        background-color: #333333; /* Fundo da caixa cinza escuro */
-        border-radius: 12px;
-        padding: 15px 25px;
-        min-width: 120px;
-        text-align: center;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        border-bottom: 4px solid #D81B60; /* Linha de destaque vermelha */
-        transition: transform 0.2s;
-    }
-    .metric-box:hover {
-        transform: scale(1.05); /* Efeito sutil ao passar o mouse */
-        background-color: #444444;
-    }
-    .metric-value {
-        font-size: 3.0em;
-        font-weight: 900;
-        color: #FF4444; /* Vermelho para os números */
-    }
-    .metric-label {
-        font-size: 0.9em;
-        color: #aaaaaa; /* Cinza claro para os rótulos */
-        margin-top: 5px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    /* Estilos para o carrossel */
-    .stCarousel {
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 0 20px rgba(216, 27, 96, 0.6); /* Sombra vermelha forte para destaque */
-        margin-top: 40px;
-        margin-bottom: 40px;
-    }
-    
-    /* Cor do texto de informação abaixo do contador */
-    .stAlert p {
-        color: #dddddd; 
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-st.write(f"Início do Nosso Amor: **{DATE_OF_START.strftime('%d/%m/%Y às %H:%M:%S')}**")
-st.markdown("---")
-
-
-# Inicializa um container vazio que será atualizado a cada segundo
-placeholder = st.empty()
-
-# O loop 'while True' permite a atualização em tempo real do contador.
-while True:
-    years, months, days_only, h, m, s, total_seconds = calculate_duration(DATE_OF_START)
-
-    with placeholder.container():
-        # Métrica principal: Anos, Meses e Dias
-        st.markdown(
-            f'<div class="big-font">Estamos juntos há: <br> {years} anos, {months} meses e {days_only} dias!</div>',
-            unsafe_allow_html=True
-        )
-
-        # Métrica detalhada em uma grade responsiva (TODAS AO LADO)
-        st.markdown('<div class="metric-container">', unsafe_allow_html=True)
-
-        # Anos
-        st.markdown(f"""
-        <div class="metric-box">
-            <div class="metric-value">{years}</div>
-            <div class="metric-label">Anos</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Meses
-        st.markdown(f"""
-        <div class="metric-box">
-            <div class="metric-value">{months}</div>
-            <div class="metric-label">Meses</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Dias
-        st.markdown(f"""
-        <div class="metric-box">
-            <div class="metric-value">{days_only}</div>
-            <div class="metric-label">Dias Restantes</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Horas
-        st.markdown(f"""
-        <div class="metric-box">
-            <div class="metric-value">{h:02}</div>
-            <div class="metric-label">Horas</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Minutos
-        st.markdown(f"""
-        <div class="metric-box">
-            <div class="metric-value">{m:02}</div>
-            <div class="metric-label">Minutos</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Segundos
-        st.markdown(f"""
-        <div class="metric-box">
-            <div class="metric-value">{s:02}</div>
-            <div class="metric-label">Segundos</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown("---")
-        # LINHA REMOVIDA: st.info(f"O total de segundos do nosso amor é de aproximadamente: **{total_seconds:,}**")
-
-    # Espera 1 segundo antes de recalcular e atualizar a tela
-    time.sleep(1)
-
-# --- CARROSSEL ABAIXO DO CONTADOR ---
-# O carrossel é colocado APÓS o loop while True, assim ele não é redesenhado a cada segundo.
-if carousel_items:
-    st.markdown("---")
-    try:
-        carousel(items=carousel_items,
-                width=1,
-                height=450,
-                autoplay=True,
-                loop=True) 
-    except Exception as e:
-        st.error(f"Erro ao exibir carrossel. Verifique seu requirements.txt para garantir que 'streamlit-carousel' esteja instalado: {e}")
-else:
-    st.info("Adicione suas fotos na pasta 'imagens' do seu repositório para exibir o carrossel!")
+    .metric
