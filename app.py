@@ -14,7 +14,7 @@ NOW = datetime.now()
 
 # --- Funções de Cálculo ---
 def calculate_time_together(start_dt, end_dt):
-    """Calcula o tempo decorrido em anos, meses, dias, horas, minutos e total de segundos."""
+    """Calcula o tempo decorrido em anos, meses, dias, horas, minutos, segundos e total de segundos."""
     delta = end_dt - start_dt
     
     total_seconds = int(delta.total_seconds())
@@ -30,13 +30,16 @@ def calculate_time_together(start_dt, end_dt):
     remaining_seconds = total_seconds - (total_days * 86400)
     hours = int(remaining_seconds // 3600)
     minutes = int((remaining_seconds % 3600) // 60)
+    seconds = int(remaining_seconds % 60) # NOVO: Segundos restantes
     
-    return total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes
+    # Retorna todos os valores necessários, incluindo 'seconds'
+    return total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes, seconds
 
-total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes = calculate_time_together(START_DATETIME, NOW)
+# Atualiza a atribuição para incluir 'seconds'
+total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes, seconds = calculate_time_together(START_DATETIME, NOW)
 
-# --- Lista de Imagens (CORRIGIDA) ---
-# Esta lista foi verificada para conter APENHAS caminhos de arquivos válidos e acessíveis.
+# --- Lista de Imagens ---
+# Se o carrossel ainda falhar, verifique se alguma dessas imagens abaixo foi renomeada ou apagada na pasta "imagens/".
 caminhos_imagens = [
     "imagens/7a28892e-cb49-453a-9857-c3547231de6b.jpg",
     "imagens/0d427601-384a-449d-b935-069468ef3917.jpg",
@@ -61,7 +64,6 @@ caminhos_imagens = [
     "imagens/b786514b-5813-430b-a0b2-5322fddb52da.jpg",
     "imagens/b8511401-d3a4-4633-a374-ec9553f291fe.jpg",
     "imagens/image_02c7fd.jpg",
-    "imagens/Captura de tela 2025-11-19 233621.png",
     "imagens/c9653015-c93d-4225-a3b0-db230961ae4c.jpg",
     "imagens/d2284db7-4052-4275-be26-b268fbe9907d.jpg",
     "imagens/ea6ff7bf-8106-4d43-a975-3065bbc3e87d.jpg",
@@ -207,30 +209,37 @@ st.title("💖 Pedro e Hellen 💖")
 st.markdown(f'<p class="start-date-text">Nossa jornada começou em **{START_DATETIME.strftime("%d/%m/%Y às %H:%M")}**</p>', unsafe_allow_html=True)
 
 
-# 1. METRICA PRINCIPAL (ANOS, MESES, DIAS)
+# 1. METRICA PRINCIPAL (ANOS, MESES, DIAS) - Ordem 1/2/3
 st.header("Tempo Juntos (Visão Geral)")
 col_y, col_m, col_d = st.columns(3)
 with col_y: st.metric(label="Anos", value=years)
 with col_m: st.metric(label="Meses", value=months)
-with col_d: st.metric(label="Dias", value=days)
+with col_d: st.metric(label="Dias (restantes)", value=days)
     
-# 2. METRICA COMBINADA (HORAS, TOTAL DIAS, MINUTOS)
-st.header("Detalhe do Tempo (Ajuste Fino)") 
+# 2. METRICA CRONOLÓGICA (HORAS, MINUTOS, SEGUNDOS) - Ordem 4/5/6
+st.header("Detalhe do Tempo (Horas, Minutos, Segundos)") 
 
-# Cria 3 colunas, dando mais espaço para o centro
-col_h, col_total, col_min = st.columns([1, 2, 1])
+# Três colunas iguais para Horas, Minutos, Segundos
+col_h, col_min, col_s = st.columns(3)
 
 with col_h: 
-    st.metric(label="Horas", value=hours)
+    st.metric(label="Horas (restantes)", value=hours)
+
+with col_min:
+    st.metric(label="Minutos (restantes)", value=minutes)
+
+with col_s:
+    st.metric(label="Segundos (restantes)", value=seconds) # NOVO: Segundos
+
+# 3. NOVO BLOCO PARA O TOTAL DE DIAS
+st.header("Total Acumulado")
+col_spacer1, col_total, col_spacer2 = st.columns([1, 2, 1])
 
 with col_total:
     # Métrica do total de dias com estilo de destaque
     st.markdown('<div class="metric-total">', unsafe_allow_html=True)
     st.metric(label="Total de Dias (inteiros)", value=f"{total_days:,}".replace(",", "."))
     st.markdown('</div>', unsafe_allow_html=True)
-
-with col_min:
-    st.metric(label="Minutos", value=minutes)
 
 # Adicionando um divisor
 st.markdown("""
@@ -239,7 +248,7 @@ st.markdown("""
     <div style="height: 30px;"></div>
 """, unsafe_allow_html=True)
 
-# 3. Carrossel de Fotos
+# 4. Carrossel de Fotos
 st.subheader("Nossas Memórias Especiais")
 
 # Colunas para os botões (mantendo a proporção original)
@@ -258,7 +267,7 @@ with col_image_narrow:
         use_column_width=True # A imagem preenche 100% da sua coluna (que é 50% da tela)
     )
 
-# 4. Rodapé
+# 5. Rodapé
 st.markdown(f"---")
 st.caption(f"Data e Hora de Início: **{START_DATETIME.strftime('%d/%m/%Y às %H:%M')}**")
 st.caption(f"Total de fotos únicas no carrossel: **{len(caminhos_imagens)}**")
