@@ -156,6 +156,23 @@ st.markdown(
 st.write(f"Início do Nosso Amor: **{DATE_OF_START.strftime('%d/%m/%Y às %H:%M:%S')}**")
 st.markdown("---")
 
+# --- CARROSSEL ABAIXO DO CONTADOR (AGORA MOVIDO PARA CIMA) ---
+# O carrossel é colocado ANTES do loop while True para ser desenhado uma única vez.
+if carousel_items:
+    try:
+        carousel(items=carousel_items,
+                width=1,
+                height=450,
+                autoplay=True,
+                loop=True) 
+        st.markdown("---") # Separador após o carrossel
+    except Exception as e:
+        st.error(f"Erro ao exibir carrossel. Verifique seu requirements.txt para garantir que 'streamlit-carousel' esteja instalado: {e}")
+        st.markdown("---") # Coloca o separador mesmo com erro
+else:
+    st.info("Adicione suas fotos na pasta 'imagens' do seu repositório para exibir o carrossel!")
+    st.markdown("---") # Coloca o separador para manter o layout
+
 
 # Inicializa um container vazio que será atualizado a cada segundo
 placeholder = st.empty()
@@ -166,8 +183,6 @@ while True:
 
     with placeholder.container():
         
-        # O contador grande e redundante foi removido. Apenas o carrossel de métricas detalhadas permanece.
-
         # Métrica detalhada em uma grade responsiva (TODAS AO LADO)
         st.markdown('<div class="metric-container">', unsafe_allow_html=True)
 
@@ -221,22 +236,8 @@ while True:
 
         st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown("---")
+        # Removido o st.markdown("---") daqui para que o contador seja a última coisa
+        # antes do sleep
 
     # Espera 1 segundo antes de recalcular e atualizar a tela
     time.sleep(1)
-
-# --- CARROSSEL ABAIXO DO CONTADOR ---
-# O carrossel é colocado APÓS o loop while True, assim ele não é redesenhado a cada segundo.
-if carousel_items:
-    st.markdown("---")
-    try:
-        carousel(items=carousel_items,
-                width=1,
-                height=450,
-                autoplay=True,
-                loop=True) 
-    except Exception as e:
-        st.error(f"Erro ao exibir carrossel. Verifique seu requirements.txt para garantir que 'streamlit-carousel' esteja instalado: {e}")
-else:
-    st.info("Adicione suas fotos na pasta 'imagens' do seu repositório para exibir o carrossel!")
