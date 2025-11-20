@@ -3,13 +3,11 @@ from datetime import datetime
 import time
 import math
 import os
-# Linha que causa o erro: A biblioteca 'streamlit-carousel' PRECISA estar no requirements.txt
 from streamlit_carousel import carousel 
 
-# --- CONFIGURAÇÃO INICIAL (O USUÁRIO DEVE ALTERAR ESTA DATA) ---
-# Altere o ano, mês, dia, hora e minuto para a data exata do início do namoro.
-# Exemplo: datetime(Ano, Mês, Dia, Hora, Minuto, Segundo)
-DATE_OF_START = datetime(2023, 10, 27, 18, 30, 0)
+# --- CONFIGURAÇÃO INICIAL (DATA E HORA DO NAMORO) ---
+# Namoro começou em 19/05/2024 às 21:30:00
+DATE_OF_START = datetime(2024, 5, 19, 21, 30, 0)
 # ----------------------------------------------------------------
 
 # --- CARREGANDO IMAGENS DA PASTA LOCAL 'imagens' ---
@@ -21,7 +19,8 @@ if os.path.exists(IMAGE_FOLDER) and os.path.isdir(IMAGE_FOLDER):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
             image_paths.append(os.path.join(IMAGE_FOLDER, filename))
 else:
-    st.warning(f"A pasta '{IMAGE_FOLDER}' não foi encontrada. Certifique-se de que ela está no seu repositório GitHub.")
+    # Aviso caso a pasta não seja encontrada
+    st.warning(f"A pasta '{IMAGE_FOLDER}' não foi encontrada. O carrossel não será exibido. Certifique-se de que ela está no seu repositório GitHub.")
 
 carousel_items = []
 if image_paths:
@@ -29,8 +28,8 @@ if image_paths:
         carousel_items.append({
             "image": path,
             "title": f"Nossa Memória {i+1}",
-            "text": f"Momento especial {i+1} do nosso namoro",
-            "interval": 3000 # 3 segundos para cada slide
+            "text": f"Momento especial {i+1} de Pedro e Hellen",
+            "interval": 3000
         })
 # ------------------------------------------------------------------------------
 
@@ -59,31 +58,45 @@ def calculate_duration(start_date):
 
 # Configuração da página Streamlit
 st.set_page_config(
-    page_title="Contador de Namoro",
-    page_icon="💖",
+    page_title="Pedro e Hellen",
+    page_icon="❤️",
     layout="centered",
 )
 
-st.title("💖 Contador do Nosso Amor 💖")
-st.subheader("O Tempo Voa Quando Estamos Juntos!")
+st.title("❤️ Pedro e Hellen ❤️")
+st.subheader("O Nosso Amor em Números!")
 
-# Estilos CSS personalizados
+# Estilos CSS personalizados (Preto e Vermelho)
 st.markdown(
     """
     <style>
-    /* Estilos para o Contador (mantidos do design anterior) */
+    /* Fundo escuro sutil e texto principal claro */
+    body {
+        background-color: #111111; /* Preto quase total */
+        color: #ffffff; /* Texto branco */
+    }
+    .stApp {
+        background-color: #111111; /* Fundo do app */
+    }
+    h1, h2, h3, h4, .stMarkdown {
+        color: #ffffff;
+    }
+    
+    /* Contador Principal (Fundo Preto com Borda Vermelha) */
     .big-font {
         font-size: 30px !important;
         font-weight: bold;
-        color: #FF69B4;
+        color: #D81B60; /* Vermelho Principal */
         text-align: center;
         margin: 15px 0 25px 0;
-        padding: 10px;
-        border: 2px solid #D81B60;
+        padding: 15px;
+        border: 3px solid #D81B60; /* Borda Vermelha */
         border-radius: 10px;
-        background-color: #fff0f5;
-        box-shadow: 0 4px 10px rgba(255, 105, 180, 0.4);
+        background-color: #222222; /* Fundo levemente cinza/preto */
+        box-shadow: 0 4px 15px rgba(216, 27, 96, 0.4); /* Sombra Vermelha */
     }
+    
+    /* Contêiner de Métricas */
     .metric-container {
         display: flex;
         justify-content: center;
@@ -91,37 +104,47 @@ st.markdown(
         margin-top: 30px;
         gap: 20px;
     }
+    
+    /* Caixa de Cada Métrica */
     .metric-box {
-        background-color: #ffe4e1;
+        background-color: #333333; /* Fundo da caixa cinza escuro */
         border-radius: 12px;
         padding: 15px 25px;
         min-width: 120px;
         text-align: center;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        border-bottom: 4px solid #D81B60; /* Linha de destaque vermelha */
         transition: transform 0.2s;
     }
     .metric-box:hover {
-        transform: translateY(-5px);
+        transform: scale(1.05); /* Efeito sutil ao passar o mouse */
+        background-color: #444444;
     }
     .metric-value {
         font-size: 3.0em;
         font-weight: 900;
-        color: #D81B60;
+        color: #FF4444; /* Vermelho para os números */
     }
     .metric-label {
         font-size: 0.9em;
-        color: #555;
+        color: #aaaaaa; /* Cinza claro para os rótulos */
         margin-top: 5px;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
+    
     /* Estilos para o carrossel */
     .stCarousel {
         border-radius: 15px;
         overflow: hidden;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 20px rgba(216, 27, 96, 0.6); /* Sombra vermelha forte para destaque */
         margin-top: 40px;
         margin-bottom: 40px;
+    }
+    
+    /* Cor do texto de informação abaixo do contador */
+    .stAlert p {
+        color: #dddddd; 
     }
     </style>
     """,
@@ -135,23 +158,22 @@ st.markdown("---")
 if carousel_items:
     try:
         carousel(items=carousel_items,
-                width=1, # Usa a largura máxima do contêiner centralizado
-                height=400,
+                width=1,
+                height=450, # Aumentei um pouco a altura
                 autoplay=True,
-                loop=True) # O intervalo é definido dentro de cada item
+                loop=True) 
     except Exception as e:
         # Se o carrossel falhar (provavelmente a biblioteca não foi instalada), exibe um erro amigável.
-        st.error(f"Erro ao exibir carrossel (A biblioteca 'streamlit-carousel' pode não estar instalada. Verifique seu requirements.txt): {e}")
+        st.error(f"Erro ao exibir carrossel. Verifique seu requirements.txt para garantir que 'streamlit-carousel' esteja instalado: {e}")
     st.markdown("---")
 else:
-    st.error("Nenhuma imagem encontrada na pasta 'imagens' ou a pasta não existe. Adicione suas fotos lá!")
+    st.error("Nenhuma imagem encontrada na pasta 'imagens'. Adicione suas fotos lá para ter um carrossel!")
 
 
 # Inicializa um container vazio que será atualizado a cada segundo
 placeholder = st.empty()
 
 # O loop 'while True' permite a atualização em tempo real do contador.
-# (Em Streamlit Cloud, o loop pode ter pausas devido à política de recursos)
 while True:
     years, months, days_only, h, m, s, total_seconds = calculate_duration(DATE_OF_START)
 
