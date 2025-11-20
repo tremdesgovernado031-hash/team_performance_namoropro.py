@@ -136,4 +136,19 @@ st.subheader("Nossas Memórias Especiais")
 col_prev, col_center, col_next = st.columns([1, 4, 1])
 
 with col_prev:
-    st.button("⬅️ Anterior", on
+    st.button("⬅️ Anterior", on_click=prev_image)
+
+with col_next:
+    st.button("Próxima ➡️", on_click=next_image)
+
+# Exibe a Imagem
+st.image(
+    current_image_path, 
+    caption=f"Foto {st.session_state.current_index + 1} de {len(image_paths)}", 
+    use_column_width=True
+)
+
+# 3. Rodapé
+st.markdown(f"---")
+st.caption(f"Data e Hora de Início: **{START_DATETIME.strftime('%d/%m/%Y às %H:%M')}**")
+st.caption(f"Total de fotos únicas no carrossel: **{len(image_paths)}**")
