@@ -1,6 +1,8 @@
 import streamlit as st
 from datetime import datetime, timedelta
 import time
+import os # Importar para possível uso de caminhos, embora não usado diretamente aqui
+from PIL import Image # Usar a biblioteca PIL para tentar carregar a imagem com segurança
 
 # --- Configurações Iniciais ---
 st.set_page_config(
@@ -45,8 +47,20 @@ def calculate_time_together(start_dt, end_dt):
     # Retorna todos os valores necessários
     return total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes, seconds
 
+def safe_load_image(image_path):
+    """Tenta carregar a imagem e retorna o objeto da imagem ou None em caso de erro."""
+    try:
+        # Tenta abrir e carregar a imagem
+        img = Image.open(image_path)
+        return img
+    except Exception as e:
+        # Se houver um erro (arquivo não encontrado, corrompido, etc.), retorna None
+        st.error(f"Erro ao carregar imagem '{image_path}': {e}")
+        return None
+
 # --- Lista de Imagens ---
 # TOTAL: 29 caminhos de arquivo ÚNICOS
+# REMOVIDO: 'fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg' que estava causando o erro de 'NoneType'
 caminhos_imagens = [
     "eb8ec612-f16e-4814-85f3-a6a62b78d6a1.jpg",
     "21d25895-1288-4db2-857d-ed1400973387.jpg",
@@ -70,7 +84,7 @@ caminhos_imagens = [
     "d2284db7-4052-4275-be26-b268fbe9907d.jpg",
     "a7e2ea93-2876-40e2-98a2-c581bbc93779.jpg",
     "9e264297-7acd-40ac-a8ae-8a2f0cbd339e.jpg",
-    "fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg",
+    # "fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg", # Arquivo problemático
     "78b878b6-14a9-4df2-8060-499c939358bf.jpg",
     "WhatsApp Image 2025-11-19 at 20.43.14.jpeg",
     "46473c97-9f73-4f0d-9ef3-0132ea25008e.jpg",
@@ -95,7 +109,12 @@ if len(caminhos_imagens) == 0:
     st.error("Nenhuma imagem encontrada. Por favor, adicione caminhos de fotos na lista 'caminhos_imagens'.")
     st.stop()
     
+# Obter o caminho da imagem atual (ainda não carregada)
 current_image_path = caminhos_imagens[st.session_state.current_index]
+
+# Tenta carregar a imagem de forma segura
+current_image = safe_load_image(current_image_path)
+
 
 # >>> CSS PERSONALIZADO (TEMA PRETO E VERMELHO - FOCO NO HUD) <<<
 # O seletor h1.st-emotion-cache-10qzyku foi alterado para o seletor mais genérico h1
@@ -177,6 +196,31 @@ st.markdown("""
         font-size: 4.5rem; /* Mantém o tamanho grande */
         color: #FF0000; /* Vermelho puro no valor */
     }
+    
+    /* NOVO ESTILO: Resumo Total - Destaque do tempo em anos, meses e dias */
+    .total-summary {
+        text-align: center;
+        margin-top: 3rem;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        border: 1px solid #7F1D1D;
+        border-radius: 1.5rem;
+        background-color: #1a0505; /* Fundo escuro sutil */
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    }
+    .total-summary .value {
+        font-size: 2.5rem; 
+        font-weight: 800;
+        color: #FF0000; /* Vermelho puro para o valor */
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        line-height: 1.2;
+    }
+    .total-summary .label {
+        font-size: 1.2rem;
+        color: #FCA5A5;
+        font-style: italic;
+    }
+
     /* Estilo do rodapé */
     .footer-text { 
         color: #A3A3A3;
@@ -241,14 +285,28 @@ with col_d:
 # 2. Total de Dias (Destaque Central)
 # Usando um markdown container para aplicar a classe 'metric-total'
 st.markdown('<div class="metric-total">', unsafe_allow_html=True)
-st.metric(label="Total de Dias", value=total_days)
+# Formatação aplicada ao total_days
+st.metric(label="Total de Dias", value=f"{total_days:,}".replace(",", "."))
 st.markdown('</div>', unsafe_allow_html=True)
+
+# NOVO: Resumo Detalhado (Total de Anos/Meses/Dias)
+st.markdown("<h2>Resumo do Tempo Total</h2>", unsafe_allow_html=True)
+
+summary_text = f"""
+    <div class="total-summary">
+        <p class="label">O tempo que vocês passaram juntos é de:</p>
+        <p class="value">
+            {years} ANOS, {months} MESES e {days} DIAS (Aprox.)
+        </p>
+    </div>
+"""
+st.markdown(summary_text, unsafe_allow_html=True)
+
 
 # 3. Contadores Secundários (Horas, Minutos, Segundos - Exatos)
 st.header("Detalhes Milissegundos")
 
 # Criamos um placeholder para o tempo exato para que possamos atualizá-lo
-# Mesmo que o loop de rerun esteja no final, usamos o placeholder para manter o layout
 time_placeholder = st.empty()
 
 with time_placeholder.container():
@@ -274,10 +332,12 @@ st.header("Nossas Memórias")
 col_space_l, col_img_center, col_space_r = st.columns([1, 4, 1])
 
 with col_img_center:
-    # A imagem exibida será o caminho do arquivo carregado. 
-    # Removido 'use_container_width=True' (que causava o erro) ou 'use_column_width=True' (que pode ser incompatível)
-    # O dimensionamento é agora controlado pelo CSS.
-    st.image(current_image_path, caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}")
+    # ** Aplica a verificação de imagem carregada **
+    if current_image:
+        st.image(current_image, caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}")
+    else:
+        # Exibe uma mensagem de erro na área da imagem se ela não puder ser carregada
+        st.error(f"Não foi possível exibir a foto: {current_image_path}. O arquivo pode estar faltando ou corrompido.")
     
 # Cria colunas para os botões Anterior/Próximo
 col_btn1, col_btn_space, col_btn2 = st.columns([1, 3, 1])
