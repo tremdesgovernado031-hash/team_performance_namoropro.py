@@ -224,7 +224,6 @@ with col_h:
     st.metric(label="Horas", value=hours)
 
 with col_total:
-    # A frase "O Amor se Multiplica em..." foi removida daqui!
     # Métrica do total de dias com estilo de destaque
     st.markdown('<div class="metric-total">', unsafe_allow_html=True)
     st.metric(label="Total de Dias (inteiros)", value=f"{total_days:,}".replace(",", "."))
@@ -243,15 +242,21 @@ st.markdown("""
 # 3. Carrossel de Fotos
 st.subheader("Nossas Memórias Especiais")
 
-col_prev, col_center, col_next = st.columns([1, 4, 1])
+# Colunas para os botões (mantendo a proporção original)
+col_prev, col_center_buttons, col_next = st.columns([1, 4, 1])
 with col_prev: st.button("⬅️ Anterior", on_click=prev_image, use_container_width=True)
 with col_next: st.button("Próxima ➡️", on_click=next_image, use_container_width=True)
 
-st.image(
-    current_image_path, 
-    caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}", 
-    use_column_width=True
-)
+# Nova estrutura para centralizar e reduzir a imagem (aproximadamente 50% da largura da tela)
+# A imagem será colocada na coluna do meio, que é 3/6 (50%) da largura.
+col_spacer_l, col_image_narrow, col_spacer_r = st.columns([1.5, 3, 1.5]) 
+
+with col_image_narrow:
+    st.image(
+        current_image_path, 
+        caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}", 
+        use_column_width=True # A imagem preenche 100% da sua coluna (que é 50% da tela)
+    )
 
 # 4. Rodapé
 st.markdown(f"---")
