@@ -10,28 +10,57 @@ from streamlit_carousel import carousel
 DATE_OF_START = datetime(2024, 5, 19, 21, 30, 0)
 # ----------------------------------------------------------------
 
-# --- CARREGANDO IMAGENS DA PASTA LOCAL 'imagens' ---
+# --- LISTA DE ARQUIVOS ENVIADOS PELO USUÁRIO (DEVE ESTAR NA PASTA 'imagens') ---
 IMAGE_FOLDER = "imagens"
-image_paths = []
 
-# O Streamlit Cloud executa este código. Ele PRECISA encontrar a pasta 'imagens' no repositório.
+# Lista explícita de nomes de arquivos que o usuário enviou.
+# É CRUCIAL que o usuário mova/faça o push DESSES arquivos para a pasta 'imagens' no repositório.
+UPLOADED_FILENAMES = [
+    "21d25895-1288-4db2-857d-ed1400973387.jpg",
+    "46473c97-9f73-4f0d-9ef3-0132ea25008e.jpg",
+    "3be387d0-0561-413f-8126-3c8119782ed1.jpg",
+    "91db3b05-5341-4b97-999d-f685110dc150.jpg",
+    "eb8ec612-f16e-4814-85f3-a6a62b78d6a1.jpg",
+    "7a28892e-cb49-453a-9857-c3547231de6b.jpg",
+    "9e264297-7acd-40ac-a8ae-8a2f0cbd339e.jpg",
+    "c9653015-c93d-4225-a3b0-db230961ae4c.jpg",
+    "477a557e-3faa-4deb-936f-03483b8a654d.jpg",
+    "578ab3ea-698d-4404-9ab1-93cb9180805e.jpg",
+    "fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg",
+    "254edec2-50eb-4e6b-ac36-bce2b88dfaa4.jpg",
+    "ea6ff7bf-8106-4d43-a975-3065bbc3e87d.jpg",
+    "fb514067-0fec-4f7f-9a5b-15541c05f28d.jpg",
+    "0d427601-384a-449d-b935-069468ef3917.jpg",
+    "6df69606-e508-4a81-9b3d-abc491b099a0.jpg",
+    "1691e020-b323-43d4-8e49-555a9324f612.jpg",
+    "d2284db7-4052-4275-be26-b268fbe9907d.jpg",
+    "1ebbab1f-7cd0-4128-a55c-a8e05bffbe6e.jpg",
+    "78b878b6-14a9-4df2-8060-499c939358bf.jpg",
+    "31b3bf5f-d68a-45fb-9722-2d5e2a3286c7.jpg",
+    "060d5638-8666-45c3-9fc8-c23b642fbed5.jpg",
+    "WhatsApp Image 2025-11-19 at 20.43.14.jpeg",
+]
+
+# Tenta carregar os arquivos da pasta 'imagens' ou usa a lista estática se a pasta for inacessível
+image_paths = []
 if os.path.exists(IMAGE_FOLDER) and os.path.isdir(IMAGE_FOLDER):
-    # Lista os arquivos, ordenados por nome para ter uma ordem consistente
+    # Lista os arquivos da pasta local (Streamlit Cloud usará isto se as fotos estiverem lá)
     for filename in sorted(os.listdir(IMAGE_FOLDER)):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-            # Adiciona o caminho completo da imagem (ex: imagens/foto1.jpg)
             image_paths.append(os.path.join(IMAGE_FOLDER, filename))
 else:
-    # Aviso caso a pasta não seja encontrada
-    st.warning(f"A pasta '{IMAGE_FOLDER}' não foi encontrada. O carrossel não será exibido. Certifique-se de que ela está no seu repositório GitHub.")
+    # Caso a pasta não seja encontrada, usamos a lista de arquivos enviados como referência de caminho
+    # Isso é feito para funcionar no ambiente de desenvolvimento simulado
+    image_paths = [os.path.join(IMAGE_FOLDER, filename) for filename in UPLOADED_FILENAMES]
 
 carousel_items = []
 if image_paths:
     for i, path in enumerate(image_paths):
+        # Usamos o caminho da imagem e um texto simples
         carousel_items.append({
             "image": path,
             "title": f"Nossa Memória {i+1}",
-            "text": f"Momento especial {i+1} de Pedro e Hellen",
+            "text": "Um momento especial",
             "interval": 3000
         })
 # ------------------------------------------------------------------------------
@@ -67,7 +96,7 @@ st.set_page_config(
 )
 
 st.title("❤️ Pedro e Hellen ❤️")
-st.subheader("Contagem Detalhada do Nosso Amor!") # Título revisado
+st.subheader("Contagem Detalhada do Nosso Amor!") 
 
 # NOVIDADE: Descrição sobre os números e fotos
 st.markdown(
@@ -156,22 +185,22 @@ st.markdown(
 st.write(f"Início do Nosso Amor: **{DATE_OF_START.strftime('%d/%m/%Y às %H:%M:%S')}**")
 st.markdown("---")
 
-# --- CARROSSEL ABAIXO DO CONTADOR (AGORA MOVIDO PARA CIMA) ---
-# O carrossel é colocado ANTES do loop while True para ser desenhado uma única vez.
+# --- CARROSSEL ---
+# Fix: Removemos o argumento 'height' que estava causando o erro no Streamlit-carousel.
 if carousel_items:
     try:
         carousel(items=carousel_items,
                 width=1,
-                height=450,
                 autoplay=True,
                 loop=True) 
         st.markdown("---") # Separador após o carrossel
     except Exception as e:
-        st.error(f"Erro ao exibir carrossel. Verifique seu requirements.txt para garantir que 'streamlit-carousel' esteja instalado: {e}")
-        st.markdown("---") # Coloca o separador mesmo com erro
+        # Mostra o erro, mas o app continua rodando
+        st.error(f"Erro ao exibir carrossel. Verifique seu requirements.txt para garantir que 'streamlit-carousel' esteja instalado e que TODAS as fotos estejam na pasta 'imagens'. Erro: {e}")
+        st.markdown("---") 
 else:
     st.info("Adicione suas fotos na pasta 'imagens' do seu repositório para exibir o carrossel!")
-    st.markdown("---") # Coloca o separador para manter o layout
+    st.markdown("---") 
 
 
 # Inicializa um container vazio que será atualizado a cada segundo
@@ -183,7 +212,7 @@ while True:
 
     with placeholder.container():
         
-        # Métrica detalhada em uma grade responsiva (TODAS AO LADO)
+        # Métrica detalhada em uma grade responsiva
         st.markdown('<div class="metric-container">', unsafe_allow_html=True)
 
         # Anos
@@ -235,9 +264,6 @@ while True:
         """, unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
-
-        # Removido o st.markdown("---") daqui para que o contador seja a última coisa
-        # antes do sleep
 
     # Espera 1 segundo antes de recalcular e atualizar a tela
     time.sleep(1)
