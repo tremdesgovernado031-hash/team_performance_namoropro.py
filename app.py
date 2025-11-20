@@ -2,30 +2,31 @@ import streamlit as st
 from datetime import datetime
 import math
 import os
+import time # Importação necessária para o st.rerun
 
 # =========================================================================
 # 1. CONFIGURAÇÃO E DADOS
 # =========================================================================
 
 # Ajuste a data e hora do início do namoro aqui! (Ano, Mês, Dia, Hora, Minuto, Segundo)
+# Exemplo: 19 de Maio de 2024 às 21:40:00
 START_DATE = datetime(2024, 5, 19, 21, 40, 0) 
 TITLE = "Pedro & Hellen ❤️" # Altere o título principal
 SUBTITLE = "Juntos desde" # O subtítulo que aparece antes da data
 
 # LISTA DE CAMINHOS LOCAIS PARA AS FOTOS
-# ATENÇÃO: Os nomes dos arquivos nesta lista SÃO OS ARQUIVOS QUE VOCÊ CARREGOU.
-# O Streamlit irá procurá-los na pasta 'images/' no seu deploy.
+# ATENÇÃO: O Streamlit irá procurar estas fotos na pasta 'imagens/'
+# Esta lista foi ajustada para corresponder à sua pasta no GitHub.
 PHOTOS = [
-    'images/3be387d0-0561-413f-8126-3c8119782ed1.jpg',
-    'images/6df69606-e508-4a81-9b3d-abc491b099a0.jpg',
-    'images/4f26d6e8-f6d8-4213-88ac-495b2e9b3175.jpg',
-    'images/1c4a86e4-cbcf-4a86-b6fe-30a5d26e4639.jpg',
-    'images/2a546536-5b83-4a33-95a5-7bc28309e6d1.jpg',
-    'images/7a28892e-cb49-453a-9857-c3547231de6b.jpg',
-    'images/1ebbab1f-7cd0-4128-a55c-a8e05bffbe6e.jpg',
-    'images/0d427601-384a-449d-b935-069468ef3917.jpg',
-    'images/6f906328-f57f-4ea5-8e6d-8f12f74487b7.jpg',
-    # Você pode adicionar mais fotos seguindo o padrão 'images/nome_do_seu_arquivo.extensao'
+    'imagens/3be387d0-0561-413f-8126-3c8119782ed1.jpg',
+    'imagens/6df69606-e508-4a81-9b3d-abc491b099a0.jpg',
+    'imagens/4f26d6e8-f6d8-4213-88ac-495b2e9b3175.jpg',
+    'imagens/1c4a86e4-cbcf-4a86-b6fe-30a5d26e4639.jpg',
+    'imagens/2a546536-5b83-4a33-95a5-7bc28309e6d1.jpg',
+    'imagens/7a28892e-cb49-453a-9857-c3547231de6b.jpg',
+    'imagens/1ebbab1f-7cd0-4128-a55c-a8e05bffbe6e.jpg',
+    'imagens/0d427601-384a-449d-b935-069468ef3917.jpg', 
+    'imagens/6f906328-f57f-4ea5-8e6d-8f12f74487b7.jpg',
 ]
 
 # =========================================================================
@@ -143,6 +144,10 @@ st.markdown("""
         width: 100%;
         min-height: 200px;
     }
+    /* O Streamlit utiliza divs específicas que podemos estilizar */
+    div[data-testid="stVerticalBlock"] > div:first-child {
+        margin-bottom: 0;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -163,6 +168,7 @@ def main():
     # Função auxiliar para exibir o componente
     def display_counter(column, value, label):
         # Adiciona zero à esquerda para Horas, Minutos e Segundos
+        # Usa total_days em vez de dias_parciais para o contador principal
         formatted_value = str(value).zfill(2) if label in ['Horas', 'Minutos', 'Segundos'] else str(value)
         with column:
             st.markdown(f"""
@@ -175,9 +181,11 @@ def main():
     # Exibição do Contador em Colunas
     # Usa 6 colunas para exibir Anos, Meses, Dias, Horas, Minutos, Segundos
     col1, col2, col3, col4, col5, col6 = st.columns(6)
+    
+    # Nota: No display de dias, usamos 'total_days' para mostrar a contagem total de dias.
     display_counter(col1, time_data['years'], 'Anos')
     display_counter(col2, time_data['months'], 'Meses')
-    display_counter(col3, time_data['total_days'], 'Dias')
+    display_counter(col3, time_data['total_days'], 'Dias Totais')
     display_counter(col4, time_data['hours'], 'Horas')
     display_counter(col5, time_data['minutes'], 'Minutos')
     display_counter(col6, time_data['seconds'], 'Segundos')
@@ -185,7 +193,7 @@ def main():
     # 3. Galeria de Fotos
     st.markdown('<div class="gallery-title">Nossas Memórias</div>', unsafe_allow_html=True)
     
-    # Filtra apenas fotos que realmente existem localmente (para evitar erros no Streamlit Cloud caso um arquivo falte)
+    # Filtra apenas fotos que realmente existem localmente (importante para o deploy no Streamlit)
     available_photos = [p for p in PHOTOS if os.path.exists(p)]
     
     if available_photos:
@@ -200,17 +208,17 @@ def main():
                     st.image(photo_path, use_column_width=True)
                 except Exception as e:
                     # Mensagem de fallback caso a imagem não seja carregada no deploy
-                    st.warning(f"Não foi possível carregar a imagem: {photo_path}")
+                    # st.warning(f"Não foi possível carregar a imagem: {photo_path}") # Comentei para evitar poluição visual
+                    pass 
     else:
-        # Se nenhuma foto for encontrada localmente, mostra as fotos da lista PHOTOS para debug
-        if PHOTOS:
-             st.info("Nenhuma foto na lista 'PHOTOS' foi encontrada na pasta local 'images/'. Por favor, verifique se os nomes dos arquivos estão corretos.")
-        else:
-             st.info("A lista de fotos está vazia. Adicione caminhos de fotos (ex: 'images/minha_foto.jpg') à lista 'PHOTOS' no início do arquivo.")
+        # Mensagem se as fotos não forem encontradas (o que geralmente acontece antes do push para o GitHub)
+        st.info("A galeria de fotos estará visível após você enviar a pasta `imagens/` e o arquivo `app.py` corrigido para o GitHub e fazer o deploy no Streamlit Cloud.")
 
 
 if __name__ == '__main__':
-    # Esta linha faz o contador atualizar a cada 1 segundo.
-    import time
+    # Esta linha executa a aplicação
+    main()
+    
+    # Configuração de 'st.rerun' para atualizar o contador a cada 1 segundo.
     time.sleep(1) 
     st.rerun()
