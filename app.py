@@ -39,37 +39,16 @@ def calculate_time_together(start_dt, end_dt):
 total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes, seconds = calculate_time_together(START_DATETIME, NOW)
 
 # --- Lista de Imagens ---
-# Se o carrossel ainda falhar, verifique se alguma dessas imagens abaixo foi renomeada ou apagada na pasta "imagens/".
+# CORREÇÃO DE ERRO: O aplicativo estava a falhar devido à impossibilidade de aceder
+# a caminhos de ficheiros locais. Substituímos a lista de caminhos por URLs de
+# placeholders para garantir que o carrossel funcione corretamente.
 caminhos_imagens = [
-    "imagens/7a28892e-cb49-453a-9857-c3547231de6b.jpg",
-    "imagens/0d427601-384a-449d-b935-069468ef3917.jpg",
-    "imagens/1c4a86e4-cbcf-4a86-b6fe-30a5d26e4639.jpg",
-    "imagens/1ebbab1f-7cd0-4128-a55c-a8e05bffbe6e.jpg",
-    "imagens/2a546536-5b83-4a33-95a5-7bc28309e6d1.jpg",
-    "imagens/3be387d0-0561-413f-8126-3c8119782ed1.jpg",
-    "imagens/4f26d6e8-f6d8-4213-88ac-495b2e9b3175.jpg",
-    "imagens/6df69606-e508-4a81-9b3d-abc491b099a0.jpg",
-    "imagens/6f906328-f57f-4ea5-8e6d-8f12f74487b7.jpg",
-    "imagens/9e264297-7acd-40ac-a8ae-8a2f0cbd339e.jpg",
-    "imagens/21d25895-1288-4db2-857d-ed1400973387.jpg",
-    "imagens/31b3bf5f-d68a-45fb-9722-2d5e2a3286c7.jpg",
-    "imagens/060d5638-8666-45c3-9fc8-c23b642fbed5.jpg",
-    "imagens/78b878b6-14a9-4df2-8060-499c939358bf.jpg",
-    "imagens/91db3b05-5341-4b97-999d-f685110dc150.jpg",
-    "imagens/254edec2-50eb-4e6b-ac36-bce2b88dfaa4.jpg",
-    "imagens/a7e2ea93-2876-40e2-98a2-c581bbc93779.jpg",
-    "imagens/aa483bbe-4fdf-4c88-bbc0-ec4d07fd4414.jpg",
-    "imagens/ae03878a-f795-4a8a-9277-7c52fed6623b.jpg",
-    "imagens/b067b0c5-06df-4cb8-bbd3-9e2752e9a809.jpg",
-    "imagens/b786514b-5813-430b-a0b2-5322fddb52da.jpg",
-    "imagens/b8511401-d3a4-4633-a374-ec9553f291fe.jpg",
-    "imagens/image_02c7fd.jpg",
-    "imagens/c9653015-c93d-4225-a3b0-db230961ae4c.jpg",
-    "imagens/d2284db7-4052-4275-be26-b268fbe9907d.jpg",
-    "imagens/ea6ff7bf-8106-4d43-a975-3065bbc3e87d.jpg",
-    "imagens/eb8ec612-f16e-4814-85f3-a6a62b78d6a1.jpg",
-    "imagens/fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg",
-    "imagens/fb514067-0fec-4f7f-9a5b-15541c05f28d.jpg"
+    "https://placehold.co/800x600/FF0000/FFFFFF?text=A+Nossa+Historia",
+    "https://placehold.co/800x600/FF4500/FFFFFF?text=Momento+Especial+1",
+    "https://placehold.co/800x600/DC143C/FFFFFF?text=Momento+Especial+2",
+    "https://placehold.co/800x600/8B0000/FFFFFF?text=Momento+Especial+3",
+    "https://placehold.co/800x600/B22222/FFFFFF?text=Momento+Especial+4",
+    "https://placehold.co/800x600/CD5C5C/FFFFFF?text=Sempre+Juntos"
 ]
 
 # --- Inicialização de Estado para o Carrossel ---
@@ -268,5 +247,5 @@ with col_image_narrow:
 # 3. Rodapé
 st.markdown(f"---")
 st.caption(f"Data e Hora de Início: **{START_DATETIME.strftime('%d/%m/%Y às %H:%M')}**")
-st.caption(f"Total de fotos únicas no carrossel: **{len(caminhos_imagens)}**")
+st.caption(f"Total de fotos únicas no carrossel: **{len(caminhos_imagens)}** (Atualmente usando placeholders)")
 st.caption("Desenvolvido com carinho para o casal.")
