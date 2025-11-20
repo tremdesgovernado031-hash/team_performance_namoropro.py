@@ -46,13 +46,42 @@ def calculate_time_together(start_dt, end_dt):
     return total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes, seconds
 
 # --- Lista de Imagens ---
-# IMPORTANTE: Por favor, substitua a imagem de placeholder abaixo 
-# por todos os caminhos das suas fotos.
+# TOTAL: 31 caminhos de arquivo (15 originais + 8 do commit anterior + 8 novos)
 caminhos_imagens = [
-    # Adicione aqui os caminhos das suas fotos!
-    "https://placehold.co/800x600/7F1D1D/FFFFFF?text=ADICIONE+AS+SUAS+FOTOS+AQUI", 
-    "https://placehold.co/800x600/FF4500/FFFFFF?text=SEGUNDA+FOTO+DE+MEM%C3%93RIA", 
-    "https://placehold.co/800x600/DC2626/FFFFFF?text=TERCEIRA+FOTO+ESPECIAL", 
+    # 15 Imagens Originais
+    "WhatsApp Image 2025-11-19 at 20.43.14.jpeg", 
+    "c9653015-c93d-4225-a3b0-db230961ae4c.jpg", 
+    "d2284db7-4052-4275-be26-b268fbe9907d.jpg",
+    "ea6ff7bf-8106-4d43-a975-3065bbc3e87d.jpg",
+    "eb8ec612-f16e-4814-85f3-a6a62b78d6a1.jpg",
+    "fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg",
+    "fb514067-0fec-4f7f-9a5b-15541c05f28d.jpg",
+    "14952851-5411-48a2-9529-89caac8ad179.jpg",
+    "17062653-6824-44e6-968d-65ef02f4f310.jpg",
+    "a7e2ea93-2876-40e2-98a2-c581bbc93779.jpg",
+    "aa483bbe-4fdf-4c88-bbc0-ec4d07fd4414.jpg",
+    "ae03878a-f795-4a8a-9277-7c52fed6623b.jpg",
+    "b067b0c5-06df-4cb8-bbd3-9e2752e9a809.jpg",
+    "b786514b-5813-430b-a0b2-5322fddb52da.jpg",
+    "b8511401-d3a4-4633-a374-ec9553f291fe.jpg",
+    # 8 Novas Imagens (Adicionadas no Commit Anterior)
+    "060d5638-8666-45c3-9fc8-c23b642fbed5.jpg",
+    "78b878b6-14a9-4df2-8060-499c939358bf.jpg",
+    "91db3b05-5341-4b97-999d-f685110dc150.jpg",
+    "254edec2-50eb-4e6b-ac36-bce2b88dfaa4.jpg",
+    "477a557e-3faa-4deb-936f-03483b8a654d.jpg",
+    "578ab3ea-698d-4404-9ab1-93cb9180805e.jpg",
+    "1691e020-b323-43d4-8e49-555a9324f612.jpg",
+    "46473c97-9f73-4f0d-9ef3-0132ea25008e.jpg",
+    # 8 Novas Imagens (Adicionadas Agora)
+    "0d427601-384a-449d-b935-069468ef3917.jpg",
+    "1ebbab1f-7cd0-4128-a55c-a8e05bffbe6e.jpg",
+    "3be387d0-0561-413f-8126-3c8119782ed1.jpg",
+    "6df69606-e508-4a81-9b3d-abc491b099a0.jpg",
+    "7a28892e-cb49-453a-9857-c3547231de6b.jpg",
+    "9e264297-7acd-40ac-a8ae-8a2f0cbd339e.jpg",
+    "21d25895-1288-4db2-857d-ed1400973387.jpg",
+    "31b3bf5f-d68a-45fb-9722-2d5e2a3286c7.jpg",
 ]
 
 # --- Inicialização de Estado para o Carrossel ---
@@ -250,6 +279,7 @@ st.header("Nossas Memórias")
 col_space_l, col_img_center, col_space_r = st.columns([1, 4, 1])
 
 with col_img_center:
+    # A imagem exibida será o caminho do arquivo carregado
     st.image(current_image_path, use_column_width=True, caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}")
     
 # Cria colunas para os botões Anterior/Próximo
