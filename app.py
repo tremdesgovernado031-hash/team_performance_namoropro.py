@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 import math
 import os
+# Reintrodução do carrossel para melhor gestão da galeria e aplicação de CSS
 from streamlit_carousel import carousel 
 
 # --- CONFIGURAÇÃO INICIAL (DATA E HORA DO NAMORO) ---
@@ -10,58 +11,30 @@ from streamlit_carousel import carousel
 DATE_OF_START = datetime(2024, 5, 19, 21, 30, 0)
 # ----------------------------------------------------------------
 
-# --- LISTA DE ARQUIVOS ENVIADOS PELO USUÁRIO (DEVE ESTAR NA PASTA 'imagens') ---
+# --- CARREGANDO IMAGENS DA PASTA LOCAL 'imagens' ---
 IMAGE_FOLDER = "imagens"
-
-# Lista explícita de nomes de arquivos que o usuário enviou.
-# É CRUCIAL que o usuário mova/faça o push DESSES arquivos para a pasta 'imagens' no repositório.
-UPLOADED_FILENAMES = [
-    "21d25895-1288-4db2-857d-ed1400973387.jpg",
-    "46473c97-9f73-4f0d-9ef3-0132ea25008e.jpg",
-    "3be387d0-0561-413f-8126-3c8119782ed1.jpg",
-    "91db3b05-5341-4b97-999d-f685110dc150.jpg",
-    "eb8ec612-f16e-4814-85f3-a6a62b78d6a1.jpg",
-    "7a28892e-cb49-453a-9857-c3547231de6b.jpg",
-    "9e264297-7acd-40ac-a8ae-8a2f0cbd339e.jpg",
-    "c9653015-c93d-4225-a3b0-db230961ae4c.jpg",
-    "477a557e-3faa-4deb-936f-03483b8a654d.jpg",
-    "578ab3ea-698d-4404-9ab1-93cb9180805e.jpg",
-    "fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg",
-    "254edec2-50eb-4e6b-ac36-bce2b88dfaa4.jpg",
-    "ea6ff7bf-8106-4d43-a975-3065bbc3e87d.jpg",
-    "fb514067-0fec-4f7f-9a5b-15541c05f28d.jpg",
-    "0d427601-384a-449d-b935-069468ef3917.jpg",
-    "6df69606-e508-4a81-9b3d-abc491b099a0.jpg",
-    "1691e020-b323-43d4-8e49-555a9324f612.jpg",
-    "d2284db7-4052-4275-be26-b268fbe9907d.jpg",
-    "1ebbab1f-7cd0-4128-a55c-a8e05bffbe6e.jpg",
-    "78b878b6-14a9-4df2-8060-499c939358bf.jpg",
-    "31b3bf5f-d68a-45fb-9722-2d5e2a3286c7.jpg",
-    "060d5638-8666-45c3-9fc8-c23b642fbed5.jpg",
-    "WhatsApp Image 2025-11-19 at 20.43.14.jpeg",
-]
-
-# Tenta carregar os arquivos da pasta 'imagens' ou usa a lista estática se a pasta for inacessível
 image_paths = []
-if os.path.exists(IMAGE_FOLDER) and os.path.isdir(IMAGE_FOLDER):
-    # Lista os arquivos da pasta local (Streamlit Cloud usará isto se as fotos estiverem lá)
+
+# Verifica se a pasta existe e lista os arquivos
+if os.path.exists(IMAGE_FOLDER) and os.isdir(IMAGE_FOLDER):
+    # Lista os arquivos, ordenados por nome para ter uma ordem consistente
     for filename in sorted(os.listdir(IMAGE_FOLDER)):
+        # Filtra apenas por arquivos de imagem comuns
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+            # Cria o caminho relativo que o Streamlit Cloud consegue ler
             image_paths.append(os.path.join(IMAGE_FOLDER, filename))
 else:
-    # Caso a pasta não seja encontrada, usamos a lista de arquivos enviados como referência de caminho
-    # Isso é feito para funcionar no ambiente de desenvolvimento simulado
-    image_paths = [os.path.join(IMAGE_FOLDER, filename) for filename in UPLOADED_FILENAMES]
+    st.warning(f"A pasta '{IMAGE_FOLDER}' não foi encontrada. O carrossel não será exibido.")
 
+# Preparar os itens do carrossel (formato exigido pela biblioteca)
 carousel_items = []
 if image_paths:
-    for i, path in enumerate(image_paths):
-        # Usamos o caminho da imagem e um texto simples
+    for path in image_paths:
+        # Adiciona item com URL da imagem e um título básico (pode ser personalizado)
         carousel_items.append({
-            "image": path,
-            "title": f"Nossa Memória {i+1}",
-            "text": "Um momento especial",
-            "interval": 3000
+            "title": "Nós",
+            "text": "Nossa história em fotos",
+            "img": path
         })
 # ------------------------------------------------------------------------------
 
@@ -98,7 +71,7 @@ st.set_page_config(
 st.title("❤️ Pedro e Hellen ❤️")
 st.subheader("Contagem Detalhada do Nosso Amor!") 
 
-# NOVIDADE: Descrição sobre os números e fotos
+# Descrição do contador
 st.markdown(
     """
     <p style="text-align: center; color: #aaaaaa; font-size: 1.1em; margin-top: -10px;">
@@ -107,7 +80,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 
 # Estilos CSS personalizados (Preto e Vermelho)
 st.markdown(
@@ -121,14 +93,13 @@ st.markdown(
         color: #ffffff;
     }
     
-    /* Contêiner de Métricas (Responsável por colocar os boxes lado a lado e agora com destaque) */
+    /* Contêiner de Métricas */
     .metric-container {
         display: flex;
         justify-content: center;
-        flex-wrap: wrap; /* Permite que os boxes quebrem para a próxima linha em telas pequenas */
+        flex-wrap: wrap; 
         margin-top: 30px;
         gap: 20px;
-        /* Estilos para destacar o único contador */
         border: 3px solid #D81B60; /* Borda Vermelha */
         border-radius: 10px;
         padding: 20px;
@@ -138,7 +109,7 @@ st.markdown(
     
     /* Caixa de Cada Métrica */
     .metric-box {
-        background-color: #333333; /* Fundo da caixa cinza escuro */
+        background-color: #333333; 
         border-radius: 12px;
         padding: 15px 25px;
         min-width: 120px;
@@ -148,7 +119,7 @@ st.markdown(
         transition: transform 0.2s;
     }
     .metric-box:hover {
-        transform: scale(1.05); /* Efeito sutil ao passar o mouse */
+        transform: scale(1.05); 
         background-color: #444444;
     }
     .metric-value {
@@ -158,25 +129,67 @@ st.markdown(
     }
     .metric-label {
         font-size: 0.9em;
-        color: #aaaaaa; /* Cinza claro para os rótulos */
+        color: #aaaaaa; 
         margin-top: 5px;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
     
-    /* Estilos para o carrossel */
-    .stCarousel {
+    /* Estilos para o Carrossel (Solução para o Corte de Fotos Verticais) */
+    
+    /* NOVO ALVO AGRESSIVO: Tenta anular altura em TODOS os contêineres Streamlit de alto nível */
+    /* que envolvem componentes (incluindo o carrossel), forçando a altura a ser automática. */
+    .st-emotion-cache-1mnn6ge, .st-emotion-cache-9y61k, .st-emotion-cache-0, .st-emotion-cache-1wa5c1t, 
+    .st-emotion-cache-1g6x5f, .st-emotion-cache-13k65ss, .st-emotion-cache-1v0xssw, .st-emotion-cache-uofu1m {
+        height: auto !important;
+        max-height: none !important;
+        min-height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Alvo 1: O contêiner de itens do carrossel (onde a altura fixa é aplicada) */
+    .carousel-item-wrapper, .carousel-item-body {
+        height: auto !important;
+        max-height: 90vh !important; /* Limite suave para telas grandes */
+        min-height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Alvo 2: A tag img dentro do carrossel (Regras Cruciais) */
+    .carousel-item-body img {
         border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 0 20px rgba(216, 27, 96, 0.6); /* Sombra vermelha forte para destaque */
-        margin-top: 40px;
-        margin-bottom: 40px;
+        box-shadow: 0 0 20px rgba(216, 27, 96, 0.6); 
+        
+        /* ESSENCIAL: Garante que a imagem inteira seja visível (sem crop) */
+        object-fit: contain !important; 
+        
+        /* ESSENCIAL: Altura determinada pela proporção original da imagem */
+        height: auto !important; 
+        
+        /* ESSENCIAL: Remove qualquer limite de altura imposto */
+        max-height: 90vh !important; 
+        
+        width: 100% !important; 
+        min-height: auto !important;
+        aspect-ratio: auto !important; /* Usa a proporção da imagem */
     }
     
-    /* Cor do texto de informação abaixo do contador */
-    .stAlert p {
-        color: #dddddd; 
+    /* Esconde a barra de rolagem horizontal que pode aparecer com o carrossel */
+    .st-emotion-cache-1mnn6ge, .st-emotion-cache-9y61k {
+        overflow-x: hidden !important; 
     }
+    
+    /* Estilo para a Mensagem Final */
+    .final-message {
+        text-align: center;
+        font-style: italic;
+        color: #FF4444; /* Vermelho vibrante */
+        font-size: 1.2em;
+        margin-top: 40px;
+        padding: 15px;
+        border-top: 1px solid #333333;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -185,21 +198,17 @@ st.markdown(
 st.write(f"Início do Nosso Amor: **{DATE_OF_START.strftime('%d/%m/%Y às %H:%M:%S')}**")
 st.markdown("---")
 
-# --- CARROSSEL ---
-# Fix: Removemos o argumento 'height' que estava causando o erro no Streamlit-carousel.
+# --- EXIBIÇÃO DA GALERIA (CARROSSEL AUTOMÁTICO) ---
 if carousel_items:
-    try:
-        carousel(items=carousel_items,
-                width=1,
-                autoplay=True,
-                loop=True) 
-        st.markdown("---") # Separador após o carrossel
-    except Exception as e:
-        # Mostra o erro, mas o app continua rodando
-        st.error(f"Erro ao exibir carrossel. Verifique seu requirements.txt para garantir que 'streamlit-carousel' esteja instalado e que TODAS as fotos estejam na pasta 'imagens'. Erro: {e}")
-        st.markdown("---") 
+    # 1. Exibe o carrossel automático
+    carousel(items=carousel_items, width=1.0)
+    
+    # 2. MOVE O TÍTULO PARA DEPOIS DO CARROSSEL
+    st.header("✨ Nossas Melhores Memórias ✨")
+    
+    st.markdown("---")
 else:
-    st.info("Adicione suas fotos na pasta 'imagens' do seu repositório para exibir o carrossel!")
+    st.info("Adicione suas fotos na pasta 'imagens' do seu repositório para exibir a galeria!")
     st.markdown("---") 
 
 
@@ -264,6 +273,18 @@ while True:
         """, unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
+        
+        # --- MENSAGEM FINAL ADICIONADA AQUI ---
+        st.markdown(
+            """
+            <div class="final-message">
+                Oi, meu amor! 
+                Fiz esse site pra você lembrar que você é a melhor coisa que já aconteceu na minha vida e pra nunca esquecer que eu sempre vou estar do seu lado, nos momentos bons e nos ruins. Te amo pra todo o sempre! 🫶🏻
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        # -------------------------------------
 
     # Espera 1 segundo antes de recalcular e atualizar a tela
     time.sleep(1)
