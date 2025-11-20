@@ -30,9 +30,9 @@ def calculate_time_together(start_dt, end_dt):
     remaining_seconds = total_seconds - (total_days * 86400)
     hours = int(remaining_seconds // 3600)
     minutes = int((remaining_seconds % 3600) // 60)
-    seconds = int(remaining_seconds % 60) # NOVO: Segundos restantes
+    seconds = int(remaining_seconds % 60) # Segundos
     
-    # Retorna todos os valores necessários, incluindo 'seconds'
+    # Retorna todos os valores necessários
     return total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes, seconds
 
 # Atualiza a atribuição para incluir 'seconds'
@@ -209,30 +209,28 @@ st.title("💖 Pedro e Hellen 💖")
 st.markdown(f'<p class="start-date-text">Nossa jornada começou em **{START_DATETIME.strftime("%d/%m/%Y às %H:%M")}**</p>', unsafe_allow_html=True)
 
 
-# 1. METRICA PRINCIPAL (ANOS, MESES, DIAS) - Ordem 1/2/3
+# 1. VISÃO GERAL (TODAS AS MÉTRICAS DE TEMPO RELATIVAS - SEM "RESTANTES")
 st.header("Tempo Juntos (Visão Geral)")
+
+# Linha 1: Anos, Meses, Dias
 col_y, col_m, col_d = st.columns(3)
 with col_y: st.metric(label="Anos", value=years)
 with col_m: st.metric(label="Meses", value=months)
-with col_d: st.metric(label="Dias (restantes)", value=days)
-    
-# 2. METRICA CRONOLÓGICA (HORAS, MINUTOS, SEGUNDOS) - Ordem 4/5/6
-st.header("Detalhe do Tempo (Horas, Minutos, Segundos)") 
+with col_d: st.metric(label="Dias", value=days) 
 
-# Três colunas iguais para Horas, Minutos, Segundos
+# Linha 2: Horas, Minutos, Segundos
 col_h, col_min, col_s = st.columns(3)
 
 with col_h: 
-    st.metric(label="Horas (restantes)", value=hours)
+    st.metric(label="Horas", value=hours) 
 
 with col_min:
-    st.metric(label="Minutos (restantes)", value=minutes)
+    st.metric(label="Minutos", value=minutes)
 
 with col_s:
-    st.metric(label="Segundos (restantes)", value=seconds) # NOVO: Segundos
+    st.metric(label="Segundos", value=seconds)
 
-# 3. NOVO BLOCO PARA O TOTAL DE DIAS
-st.header("Total Acumulado")
+# BLOCO PARA O TOTAL DE DIAS - DESTAQUE
 col_spacer1, col_total, col_spacer2 = st.columns([1, 2, 1])
 
 with col_total:
@@ -248,7 +246,7 @@ st.markdown("""
     <div style="height: 30px;"></div>
 """, unsafe_allow_html=True)
 
-# 4. Carrossel de Fotos
+# 2. Carrossel de Fotos
 st.subheader("Nossas Memórias Especiais")
 
 # Colunas para os botões (mantendo a proporção original)
@@ -267,7 +265,7 @@ with col_image_narrow:
         use_column_width=True # A imagem preenche 100% da sua coluna (que é 50% da tela)
     )
 
-# 5. Rodapé
+# 3. Rodapé
 st.markdown(f"---")
 st.caption(f"Data e Hora de Início: **{START_DATETIME.strftime('%d/%m/%Y às %H:%M')}**")
 st.caption(f"Total de fotos únicas no carrossel: **{len(caminhos_imagens)}**")
