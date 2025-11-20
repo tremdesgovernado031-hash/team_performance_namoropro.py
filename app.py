@@ -65,7 +65,7 @@ st.set_page_config(
 )
 
 st.title("❤️ Pedro e Hellen ❤️")
-st.subheader("O Nosso Amor em Números!")
+st.subheader("O Nosso Amor em Números e fotos!")
 
 # NOVIDADE: Descrição sobre os números e fotos
 st.markdown(
