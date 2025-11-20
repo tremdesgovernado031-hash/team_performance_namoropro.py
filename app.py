@@ -58,7 +58,7 @@ def safe_load_image(image_path):
         return None
 
 # --- Lista de Imagens ---
-# TOTAL: 29 caminhos de arquivo ÚNICOS
+# TOTAL: 29 caminhos de arquivo ÚNICOS (Incluindo o arquivo corrompido que foi recolocado)
 caminhos_imagens = [
     "eb8ec612-f16e-4814-85f3-a6a62b78d6a1.jpg",
     "21d25895-1288-4db2-857d-ed1400973387.jpg",
@@ -72,7 +72,7 @@ caminhos_imagens = [
     "17062653-6824-44e6-968d-65ef02f4f310.jpg",
     "ea6ff7bf-8106-4d43-a975-3065bbc3e87d.jpg",
     "3be387d0-0561-413f-8126-3c8119782ed1.jpg",
-    "7a28892e-cb49-453a-9857-c3547231de6b.jpg",
+    "7a28892e-cb49-453a-9857-c3547231de6b.jpg", # <-- REINSERIDO
     "b067b0c5-06df-4cb8-bbd3-9e2752e9a809.jpg",
     "0d427601-384a-449d-b935-069468ef3917.jpg",
     "1ebbab1f-7cd0-4128-a55c-a8e05bffbe6e.jpg",
@@ -344,10 +344,10 @@ col_space_l, col_img_center, col_space_r = st.columns([1, 4, 1])
 with col_img_center:
     # ** Aplica a verificação de imagem carregada **
     if current_image:
+        # A legenda agora reflete a nova contagem total de 29
         st.image(current_image, caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}")
     else:
         # Exibe uma mensagem de erro na área da imagem se ela não puder ser carregada
-        # Isso pode acontecer se o Streamlit não conseguir acessar o arquivo.
         st.error(f"Não foi possível exibir a foto: {current_image_path}. O arquivo pode estar faltando ou corrompido.")
     
 # Cria colunas para os botões Anterior/Próximo
