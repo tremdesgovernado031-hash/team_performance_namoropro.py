@@ -274,8 +274,10 @@ st.header("Nossas Memórias")
 col_space_l, col_img_center, col_space_r = st.columns([1, 4, 1])
 
 with col_img_center:
-    # A imagem exibida será o caminho do arquivo carregado
-    st.image(current_image_path, use_column_width=True, caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}")
+    # A imagem exibida será o caminho do arquivo carregado. 
+    # Removido 'use_container_width=True' (que causava o erro) ou 'use_column_width=True' (que pode ser incompatível)
+    # O dimensionamento é agora controlado pelo CSS.
+    st.image(current_image_path, caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}")
     
 # Cria colunas para os botões Anterior/Próximo
 col_btn1, col_btn_space, col_btn2 = st.columns([1, 3, 1])
