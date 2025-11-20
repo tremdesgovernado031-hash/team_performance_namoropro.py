@@ -198,6 +198,7 @@ def main():
     st.markdown('<div class="gallery-title">Nossas Memórias</div>', unsafe_allow_html=True)
     
     # Filtra apenas fotos que realmente existem localmente (Streamlit Cloud verifica isso)
+    # Utilizamos os.path.join para robustez, mas no Streamlit a string direta costuma funcionar bem.
     available_photos = [p for p in PHOTOS if os.path.exists(p)]
     
     if available_photos:
