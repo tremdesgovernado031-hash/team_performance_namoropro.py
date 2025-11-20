@@ -1,34 +1,45 @@
 import streamlit as st
 import os
-from datetime import date, timedelta
-import math
+from datetime import datetime, timedelta
 
 # --- Configurações Iniciais ---
 st.set_page_config(layout="centered")
-st.title("💖 Nosso Contador de Tempo Juntos 💖")
+st.title("💖 Pedro e Hellen: Nosso Contador de Tempo Juntos 💖")
 st.markdown("---")
 
-# >>> 1. CONFIGURAÇÃO DA DATA INICIAL <<<
-# Mude esta data para o dia exato em que o namoro começou!
-START_DATE = date(2020, 5, 15) 
-TODAY = date.today()
+# >>> 1. CONFIGURAÇÃO DA DATA E HORA INICIAL <<<
+# Data e Hora exata do início do namoro: 19/05/2024 às 21:30
+# Formato: datetime(Ano, Mês, Dia, Hora, Minuto)
+START_DATETIME = datetime(2024, 5, 19, 21, 30)
+NOW = datetime.now()
 
 # --- Cálculo de Tempo ---
 
-def calculate_time_together(start_date, end_date):
-    """Calcula o tempo decorrido em anos, meses e dias."""
-    delta = end_date - start_date
+def calculate_time_together(start_dt, end_dt):
+    """Calcula o tempo decorrido em anos, meses, dias, horas e minutos."""
+    delta = end_dt - start_dt
+    
+    # Detalhes do Delta
+    total_seconds = delta.total_seconds()
+    total_minutes = int(total_seconds / 60)
+    total_hours = int(total_seconds / 3600)
     total_days = delta.days
     
-    # Cálculos aproximados para exibição
+    # Cálculo para Anos/Meses/Dias (aproximado)
     years = total_days // 365
-    remaining_days_after_years = total_days % 365
-    months = remaining_days_after_years // 30
-    days = remaining_days_after_years % 30
+    remaining_days = total_days % 365
+    months = remaining_days // 30
+    days = remaining_days % 30
     
-    return total_days, years, months, days
+    # Cálculo para Horas e Minutos
+    # Apenas o restante após os dias (para o contador total)
+    remaining_seconds = total_seconds - (total_days * 86400)
+    hours = int(remaining_seconds // 3600)
+    minutes = int((remaining_seconds % 3600) // 60)
+    
+    return total_days, total_hours, total_minutes, years, months, days, hours, minutes
 
-total_days, years, months, days = calculate_time_together(START_DATE, TODAY)
+total_days, total_hours, total_minutes, years, months, days, hours, minutes = calculate_time_together(START_DATETIME, NOW)
 
 # --- LISTA DE IMAGENS ---
 # Mantendo o carrossel com todas as 29 fotos para dar um fundo romântico.
@@ -92,19 +103,29 @@ current_image_filename = os.path.basename(current_image_path)
 
 st.header("Estamos Juntos Há:")
 
-# Cria três colunas para exibir Anos, Meses e Dias
+# Exibe o tempo principal (Anos, Meses, Dias)
 col_y, col_m, col_d = st.columns(3)
 
 with col_y:
     st.metric(label="Anos", value=years)
 
 with col_m:
-    st.metric(label="Meses (aprox.)", value=months)
+    st.metric(label="Meses", value=months)
 
 with col_d:
-    st.metric(label="Dias (aprox.)", value=days)
+    st.metric(label="Dias", value=days)
+    
+# Exibe o tempo detalhado (Horas e Minutos)
+st.subheader(f"E também há:")
+col_h, col_min = st.columns(2)
 
-st.markdown(f"<h3 style='text-align: center; color: #E91E63;'>Total de {total_days} dias de amor!</h3>", unsafe_allow_html=True)
+with col_h:
+    st.metric(label="Horas", value=hours)
+
+with col_min:
+    st.metric(label="Minutos", value=minutes)
+
+st.markdown(f"<h3 style='text-align: center; color: #E91E63; margin-top: 15px;'>Total: {total_days} dias, {total_hours} horas, ou {total_minutes} minutos de amor!</h3>", unsafe_allow_html=True)
 st.markdown("---")
 
 # 2. Carrossel de Fotos
@@ -115,19 +136,4 @@ st.subheader("Nossas Memórias Especiais")
 col_prev, col_center, col_next = st.columns([1, 4, 1])
 
 with col_prev:
-    st.button("⬅️ Anterior", on_click=prev_image)
-
-with col_next:
-    st.button("Próxima ➡️", on_click=next_image)
-
-# Exibe a Imagem
-st.image(
-    current_image_path, 
-    caption=f"Foto {st.session_state.current_index + 1} de {len(image_paths)}", 
-    use_column_width=True
-)
-
-# 3. Rodapé
-st.markdown(f"---")
-st.caption(f"Data de Início: **{START_DATE.strftime('%d/%m/%Y')}**")
-st.caption(f"Total de fotos únicas no carrossel: **{len(image_paths)}**")
+    st.button("⬅️ Anterior", on
