@@ -15,6 +15,7 @@ IMAGE_FOLDER = "imagens"
 image_paths = []
 
 if os.path.exists(IMAGE_FOLDER) and os.path.isdir(IMAGE_FOLDER):
+    # Lista os arquivos, ordenados por nome para ter uma ordem consistente
     for filename in sorted(os.listdir(IMAGE_FOLDER)):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
             image_paths.append(os.path.join(IMAGE_FOLDER, filename))
@@ -45,7 +46,7 @@ def calculate_duration(start_date):
     h = (total_seconds // 3600) % 24
     total_days = total_seconds // 86400
 
-    # Aproximação para anos e meses
+    # Aproximação para anos e meses (abordagem comum em contadores)
     DAYS_IN_YEAR = 365.2425
     DAYS_IN_MONTH = 30.4375
 
@@ -71,10 +72,6 @@ st.markdown(
     """
     <style>
     /* Fundo escuro sutil e texto principal claro */
-    body {
-        background-color: #111111; /* Preto quase total */
-        color: #ffffff; /* Texto branco */
-    }
     .stApp {
         background-color: #111111; /* Fundo do app */
     }
@@ -96,11 +93,11 @@ st.markdown(
         box-shadow: 0 4px 15px rgba(216, 27, 96, 0.4); /* Sombra Vermelha */
     }
     
-    /* Contêiner de Métricas */
+    /* Contêiner de Métricas (Responsável por colocar os boxes lado a lado) */
     .metric-container {
         display: flex;
         justify-content: center;
-        flex-wrap: wrap;
+        flex-wrap: wrap; /* Permite que os boxes quebrem para a próxima linha em telas pequenas */
         margin-top: 30px;
         gap: 20px;
     }
@@ -154,21 +151,6 @@ st.markdown(
 st.write(f"Início do Nosso Amor: **{DATE_OF_START.strftime('%d/%m/%Y às %H:%M:%S')}**")
 st.markdown("---")
 
-# Exibindo o carrossel de fotos (se houver imagens)
-if carousel_items:
-    try:
-        carousel(items=carousel_items,
-                width=1,
-                height=450, # Aumentei um pouco a altura
-                autoplay=True,
-                loop=True) 
-    except Exception as e:
-        # Se o carrossel falhar (provavelmente a biblioteca não foi instalada), exibe um erro amigável.
-        st.error(f"Erro ao exibir carrossel. Verifique seu requirements.txt para garantir que 'streamlit-carousel' esteja instalado: {e}")
-    st.markdown("---")
-else:
-    st.error("Nenhuma imagem encontrada na pasta 'imagens'. Adicione suas fotos lá para ter um carrossel!")
-
 
 # Inicializa um container vazio que será atualizado a cada segundo
 placeholder = st.empty()
@@ -184,7 +166,7 @@ while True:
             unsafe_allow_html=True
         )
 
-        # Métrica detalhada em uma grade responsiva
+        # Métrica detalhada em uma grade responsiva (TODAS AO LADO)
         st.markdown('<div class="metric-container">', unsafe_allow_html=True)
 
         # Anos
@@ -242,3 +224,18 @@ while True:
 
     # Espera 1 segundo antes de recalcular e atualizar a tela
     time.sleep(1)
+
+# --- CARROSSEL ABAIXO DO CONTADOR ---
+# O carrossel é colocado APÓS o loop while True, assim ele não é redesenhado a cada segundo.
+if carousel_items:
+    st.markdown("---")
+    try:
+        carousel(items=carousel_items,
+                width=1,
+                height=450,
+                autoplay=True,
+                loop=True) 
+    except Exception as e:
+        st.error(f"Erro ao exibir carrossel. Verifique seu requirements.txt para garantir que 'streamlit-carousel' esteja instalado: {e}")
+else:
+    st.info("Adicione suas fotos na pasta 'imagens' do seu repositório para exibir o carrossel!")
