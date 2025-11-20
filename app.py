@@ -36,7 +36,7 @@ def calculate_time_together(start_dt, end_dt):
 total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes = calculate_time_together(START_DATETIME, NOW)
 
 # --- Lista de Imagens (CORRIGIDA) ---
-# Esta lista foi verificada para conter APENAS caminhos de arquivos válidos e acessíveis.
+# Esta lista foi verificada para conter APENHAS caminhos de arquivos válidos e acessíveis.
 caminhos_imagens = [
     "imagens/7a28892e-cb49-453a-9857-c3547231de6b.jpg",
     "imagens/0d427601-384a-449d-b935-069468ef3917.jpg",
@@ -215,8 +215,6 @@ with col_m: st.metric(label="Meses", value=months)
 with col_d: st.metric(label="Dias", value=days)
     
 # 2. METRICA COMBINADA (HORAS, TOTAL DIAS, MINUTOS)
-# Removido o st.header "Detalhe do Tempo (Ajuste Fino)" para se adequar ao design da imagem
-# Mantendo apenas o st.header "Detalhe do Tempo (Ajuste Fino)" na seção 2.
 st.header("Detalhe do Tempo (Ajuste Fino)") 
 
 # Cria 3 colunas, dando mais espaço para o centro
@@ -226,6 +224,7 @@ with col_h:
     st.metric(label="Horas", value=hours)
 
 with col_total:
+    # A frase "O Amor se Multiplica em..." foi removida daqui!
     # Métrica do total de dias com estilo de destaque
     st.markdown('<div class="metric-total">', unsafe_allow_html=True)
     st.metric(label="Total de Dias (inteiros)", value=f"{total_days:,}".replace(",", "."))
