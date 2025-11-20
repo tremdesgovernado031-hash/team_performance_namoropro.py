@@ -3,7 +3,8 @@ from datetime import datetime
 import time
 import math
 import os
-from streamlit_carousel import carousel # Usando streamlit-carousel para suportar caminhos de arquivo locais
+# Linha que causa o erro: A biblioteca 'streamlit-carousel' PRECISA estar no requirements.txt
+from streamlit_carousel import carousel 
 
 # --- CONFIGURAÇÃO INICIAL (O USUÁRIO DEVE ALTERAR ESTA DATA) ---
 # Altere o ano, mês, dia, hora e minuto para a data exata do início do namoro.
@@ -12,21 +13,16 @@ DATE_OF_START = datetime(2023, 10, 27, 18, 30, 0)
 # ----------------------------------------------------------------
 
 # --- CARREGANDO IMAGENS DA PASTA LOCAL 'imagens' ---
-# O Streamlit Cloud procurará a pasta 'imagens' no repositório.
 IMAGE_FOLDER = "imagens"
 image_paths = []
 
-# Lógica para encontrar todas as imagens suportadas dentro da pasta
 if os.path.exists(IMAGE_FOLDER) and os.path.isdir(IMAGE_FOLDER):
-    # Lista os arquivos, ordenados por nome
     for filename in sorted(os.listdir(IMAGE_FOLDER)):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
             image_paths.append(os.path.join(IMAGE_FOLDER, filename))
 else:
-    # Aviso caso a pasta não seja encontrada (útil para debug no Streamlit Cloud)
     st.warning(f"A pasta '{IMAGE_FOLDER}' não foi encontrada. Certifique-se de que ela está no seu repositório GitHub.")
 
-# Formato exigido pela biblioteca streamlit-carousel: lista de dicionários
 carousel_items = []
 if image_paths:
     for i, path in enumerate(image_paths):
@@ -137,11 +133,15 @@ st.markdown("---")
 
 # Exibindo o carrossel de fotos (se houver imagens)
 if carousel_items:
-    carousel(items=carousel_items,
-             width=1, # Usa a largura máxima do contêiner centralizado
-             height=400,
-             autoplay=True,
-             loop=True) # O intervalo é definido dentro de cada item
+    try:
+        carousel(items=carousel_items,
+                width=1, # Usa a largura máxima do contêiner centralizado
+                height=400,
+                autoplay=True,
+                loop=True) # O intervalo é definido dentro de cada item
+    except Exception as e:
+        # Se o carrossel falhar (provavelmente a biblioteca não foi instalada), exibe um erro amigável.
+        st.error(f"Erro ao exibir carrossel (A biblioteca 'streamlit-carousel' pode não estar instalada. Verifique seu requirements.txt): {e}")
     st.markdown("---")
 else:
     st.error("Nenhuma imagem encontrada na pasta 'imagens' ou a pasta não existe. Adicione suas fotos lá!")
