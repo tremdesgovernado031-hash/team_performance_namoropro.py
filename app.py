@@ -1,7 +1,6 @@
 import streamlit as st
 from datetime import datetime, timedelta
 import time
-import os # Importar para possível uso de caminhos, embora não usado diretamente aqui
 from PIL import Image # Usar a biblioteca PIL para tentar carregar a imagem com segurança
 
 # --- Configurações Iniciais ---
@@ -30,6 +29,7 @@ def calculate_time_together(start_dt, end_dt):
     # 1. Cálculo de Anos, Meses, Dias (Aproximado para exibição)
     years = total_days // 365
     remaining_days = total_days % 365
+    # Simplificação: 30 dias por mês. Para cálculo mais exato, seria necessário usar lógica de meses/anos bissextos, mas para exibição é comum usar esta aproximação.
     months = remaining_days // 30
     days = remaining_days % 30 
 
@@ -55,12 +55,10 @@ def safe_load_image(image_path):
         return img
     except Exception as e:
         # Se houver um erro (arquivo não encontrado, corrompido, etc.), retorna None
-        st.error(f"Erro ao carregar imagem '{image_path}': {e}")
         return None
 
 # --- Lista de Imagens ---
 # TOTAL: 29 caminhos de arquivo ÚNICOS
-# REMOVIDO: 'fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg' que estava causando o erro de 'NoneType'
 caminhos_imagens = [
     "eb8ec612-f16e-4814-85f3-a6a62b78d6a1.jpg",
     "21d25895-1288-4db2-857d-ed1400973387.jpg",
@@ -84,13 +82,13 @@ caminhos_imagens = [
     "d2284db7-4052-4275-be26-b268fbe9907d.jpg",
     "a7e2ea93-2876-40e2-98a2-c581bbc93779.jpg",
     "9e264297-7acd-40ac-a8ae-8a2f0cbd339e.jpg",
-    # "fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg", # Arquivo problemático
     "78b878b6-14a9-4df2-8060-499c939358bf.jpg",
     "WhatsApp Image 2025-11-19 at 20.43.14.jpeg",
     "46473c97-9f73-4f0d-9ef3-0132ea25008e.jpg",
     "fb514067-0fec-4f7f-9a5b-15541c05f28d.jpg",
     "31b3bf5f-d68a-45fb-9722-2d5e2a3286c7.jpg",
     "14952851-5411-48a2-9529-89caac8ad179.jpg",
+    "fb07b5b1-ef6f-4139-9699-c6ea4d7e4131.jpg", 
 ]
 
 # --- Inicialização de Estado para o Carrossel ---
@@ -99,25 +97,26 @@ if 'current_index' not in st.session_state:
     
 def next_image():
     if len(caminhos_imagens) > 0:
+        # A navegação do carrossel força uma reexecução do script
         st.session_state.current_index = (st.session_state.current_index + 1) % len(caminhos_imagens)
 
 def prev_image():
     if len(caminhos_imagens) > 0:
+        # A navegação do carrossel força uma reexecução do script
         st.session_state.current_index = (st.session_state.current_index - 1 + len(caminhos_imagens)) % len(caminhos_imagens)
 
 if len(caminhos_imagens) == 0:
     st.error("Nenhuma imagem encontrada. Por favor, adicione caminhos de fotos na lista 'caminhos_imagens'.")
     st.stop()
     
-# Obter o caminho da imagem atual (ainda não carregada)
+# Obter o caminho da imagem atual
 current_image_path = caminhos_imagens[st.session_state.current_index]
 
-# Tenta carregar a imagem de forma segura
+# Tenta carregar a imagem de forma segura. Isso é chamado em CADA reexecução do Streamlit
 current_image = safe_load_image(current_image_path)
 
 
 # >>> CSS PERSONALIZADO (TEMA PRETO E VERMELHO - FOCO NO HUD) <<<
-# O seletor h1.st-emotion-cache-10qzyku foi alterado para o seletor mais genérico h1
 st.markdown("""
     <style>
     /* Estilo do corpo e fundo */
@@ -157,6 +156,7 @@ st.markdown("""
         padding-bottom: 0.5rem;
     }
     /* Estilo dos contadores (st.metric) - o novo HUD */
+    /* ATENÇÃO: Os seletores 'st-emotion-cache-...' podem variar. Se houver problemas, estes são os pontos a revisar. */
     .st-emotion-cache-1nj6q9b { /* Seletor do container do st.metric */
         background-color: #1e1e1e; /* Cinza bem escuro para o bloco */
         border-radius: 1.5rem;
@@ -171,14 +171,16 @@ st.markdown("""
         transform: scale(1.05); /* Pequeno zoom ao passar o mouse */
         box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
     }
-    .st-emotion-cache-q18a8y { /* Label do st.metric (Anos, Meses, Dias...) */
+    /* Label do st.metric (Anos, Meses, Dias...) */
+    .st-emotion-cache-q18a8y, .st-emotion-cache-183zdvs { 
         font-size: 1rem;
         font-weight: 700;
         color: #FFCDD2; /* Vermelho clarinho */
         text-transform: uppercase;
         letter-spacing: 1px;
     }
-    .st-emotion-cache-110u8u9 { /* Value do st.metric (O número grande) */
+    /* Value do st.metric (O número grande) */
+    .st-emotion-cache-110u8u9, .st-emotion-cache-1r3p5f5 { 
         font-size: 4.5rem; /* O MAIOR TAMANHO */
         font-weight: 900;
         color: #FF4500; /* Laranja avermelhado vibrante */
@@ -186,7 +188,6 @@ st.markdown("""
         margin-top: 0.5rem;
     }
     /* Estilo para a métrica Total de Dias (destaque) */
-    /* Uso de !important e seletores mais específicos para sobrescrever */
     .metric-total .st-emotion-cache-1nj6q9b {
         padding: 2.5rem; 
         background-color: #2c0808; /* Um pouco mais escuro para o bloco central */
@@ -197,7 +198,7 @@ st.markdown("""
         color: #FF0000; /* Vermelho puro no valor */
     }
     
-    /* NOVO ESTILO: Resumo Total - Destaque do tempo em anos, meses e dias */
+    /* NOVO ESTILO: Resumo Total - Destaque do tempo em ANOS, MESES e DIAS */
     .total-summary {
         text-align: center;
         margin-top: 3rem;
@@ -207,18 +208,16 @@ st.markdown("""
         border-radius: 1.5rem;
         background-color: #1a0505; /* Fundo escuro sutil */
         box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        font-size: 1.5rem; /* Tamanho do texto para o resumo */
+        color: #F8F8F8;
+        font-weight: 500;
     }
-    .total-summary .value {
-        font-size: 2.5rem; 
+    .total-summary strong {
+        font-size: 2.2rem; 
         font-weight: 800;
         color: #FF0000; /* Vermelho puro para o valor */
         text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
         line-height: 1.2;
-    }
-    .total-summary .label {
-        font-size: 1.2rem;
-        color: #FCA5A5;
-        font-style: italic;
     }
 
     /* Estilo do rodapé */
@@ -259,11 +258,22 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- Layout da Interface ---
+# --- Layout da Interface (Fluxo Principal) ---
 
-# Recalcula o tempo para garantir que a interface sempre use a hora mais recente
+# Recalcula o tempo para toda a exibição estática/semi-estática
 NOW = datetime.now()
-total_days, total_hours, total_minutes, total_seconds, years, months, days, hours, minutes, seconds = calculate_time_together(START_DATETIME, NOW)
+(
+    total_days, 
+    total_hours_full, 
+    total_minutes_full, 
+    total_seconds_live, 
+    years, 
+    months, 
+    days, 
+    hours_live, 
+    minutes_live, 
+    seconds_live
+) = calculate_time_together(START_DATETIME, NOW)
 
 st.title("Pedro & Hellen")
 st.markdown(
@@ -282,47 +292,47 @@ with col_m:
 with col_d:
     st.metric(label="Dias (Aprox.)", value=days)
 
-# 2. Total de Dias (Destaque Central)
-# Usando um markdown container para aplicar a classe 'metric-total'
-st.markdown('<div class="metric-total">', unsafe_allow_html=True)
-# Formatação aplicada ao total_days
-st.metric(label="Total de Dias", value=f"{total_days:,}".replace(",", "."))
-st.markdown('</div>', unsafe_allow_html=True)
-
 # NOVO: Resumo Detalhado (Total de Anos/Meses/Dias)
-st.markdown("<h2>Resumo do Tempo Total</h2>", unsafe_allow_html=True)
-
+# Nota: Removido o <h2> duplicado para melhor layout.
 summary_text = f"""
     <div class="total-summary">
-        <p class="label">O tempo que vocês passaram juntos é de:</p>
-        <p class="value">
-            {years} ANOS, {months} MESES e {days} DIAS (Aprox.)
+        <p>O nosso tempo juntos é de:</p>
+        <p>
+            <strong>{years}</strong> ANOS, 
+            <strong>{months}</strong> MESES e 
+            <strong>{days}</strong> DIAS (Aproximadamente)
         </p>
     </div>
 """
 st.markdown(summary_text, unsafe_allow_html=True)
 
 
-# 3. Contadores Secundários (Horas, Minutos, Segundos - Exatos)
-st.header("Detalhes Milissegundos")
+# 2. Total de Dias (Destaque Central)
+st.markdown('<div class="metric-total">', unsafe_allow_html=True)
+st.metric(label="Total de Dias", value=f"{total_days:,}".replace(",", "."))
+st.markdown('</div>', unsafe_allow_html=True)
 
-# Criamos um placeholder para o tempo exato para que possamos atualizá-lo
-time_placeholder = st.empty()
 
-with time_placeholder.container():
-    col_h, col_min, col_sec = st.columns(3)
+# 3. Contadores Secundários (Horas, Minutos, Segundos - AGORA ESTÁTICO)
+st.header("Detalhes do Momento Atual (Atualiza ao interagir)")
 
-    with col_h:
-        st.metric(label="Horas", value=hours)
-    with col_min:
-        st.metric(label="Minutos", value=minutes)
-    with col_sec:
-        st.metric(label="Segundos", value=seconds)
-    
-    # 4. Total Geral (abaixo do tempo exato)
-    st.markdown('<br>', unsafe_allow_html=True) # Espaçamento
-    # Formata com ponto como separador de milhares para melhor leitura (1.234.567)
-    st.metric(label="Total de Segundos Vivos", value=f"{total_seconds:,}".replace(",", "."))
+# Exibe as métricas de tempo exato (horas, minutos, segundos)
+col_h, col_min, col_sec = st.columns(3)
+
+with col_h:
+    # Mostra as horas que se passaram DENTRO do dia atual (0-23)
+    st.metric(label="Horas", value=hours_live) 
+with col_min:
+    # Mostra os minutos que se passaram DENTRO da hora atual (0-59)
+    st.metric(label="Minutos", value=minutes_live)
+with col_sec:
+    # Mostra os segundos que se passaram DENTRO do minuto atual (0-59)
+    st.metric(label="Segundos", value=seconds_live)
+
+# 4. Total Geral 
+st.markdown('<br>', unsafe_allow_html=True) # Espaçamento
+# Formata com ponto como separador de milhares para melhor leitura (1.234.567)
+st.metric(label="Total de Segundos Vivos", value=f"{total_seconds_live:,}".replace(",", "."))
 
 
 # 5. Carrossel de Fotos
@@ -337,21 +347,19 @@ with col_img_center:
         st.image(current_image, caption=f"Foto {st.session_state.current_index + 1} de {len(caminhos_imagens)}")
     else:
         # Exibe uma mensagem de erro na área da imagem se ela não puder ser carregada
+        # Isso pode acontecer se o Streamlit não conseguir acessar o arquivo.
         st.error(f"Não foi possível exibir a foto: {current_image_path}. O arquivo pode estar faltando ou corrompido.")
     
 # Cria colunas para os botões Anterior/Próximo
 col_btn1, col_btn_space, col_btn2 = st.columns([1, 3, 1])
 
 with col_btn1:
+    # Os botões agora funcionam porque o script não está mais bloqueado pelo loop 'while True'
     st.button("❮ Anterior", on_click=prev_image, use_container_width=True)
 
 with col_btn2:
+    # Os botões agora funcionam porque o script não está mais bloqueado pelo loop 'while True'
     st.button("Próximo ❯", on_click=next_image, use_container_width=True)
 
 # 6. Rodapé
-st.markdown('<p class="footer-text">Feito com ♥ por Pedro e Hellen</p>', unsafe_allow_html=True)
-
-# 7. Loop de Atualização em Tempo Real
-# Faz o script ser executado a cada 1 segundo para atualizar o contador
-time.sleep(1) 
-st.rerun()
+st.markdown('<p class="footer-text">Feito com muito amor</p>', unsafe_allow_html=True)
