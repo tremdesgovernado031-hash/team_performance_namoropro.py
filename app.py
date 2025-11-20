@@ -67,6 +67,18 @@ st.set_page_config(
 st.title("❤️ Pedro e Hellen ❤️")
 st.subheader("O Nosso Amor em Números!")
 
+# NOVIDADE: Descrição sobre os números e fotos
+st.markdown(
+    """
+    <p style="text-align: center; color: #aaaaaa; font-size: 1.1em; margin-top: -10px;">
+        Contamos cada segundo do nosso relacionamento. Veja a linha do tempo abaixo e, em seguida,
+        reviva nossas melhores lembranças na galeria de fotos!
+    </p>
+    """,
+    unsafe_allow_html=True
+)
+
+
 # Estilos CSS personalizados (Preto e Vermelho)
 st.markdown(
     """
@@ -220,7 +232,7 @@ while True:
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("---")
-        st.info(f"O total de segundos do nosso amor é de aproximadamente: **{total_seconds:,}**")
+        # LINHA REMOVIDA: st.info(f"O total de segundos do nosso amor é de aproximadamente: **{total_seconds:,}**")
 
     # Espera 1 segundo antes de recalcular e atualizar a tela
     time.sleep(1)
